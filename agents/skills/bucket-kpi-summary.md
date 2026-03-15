@@ -116,17 +116,20 @@ Important:
 - If weighted analysis is requested, present it as a secondary lens, not the default.
 
 ## Default Output Structure
-Unless the user explicitly asks for a shorter or different format, produce all of the following:
+Unless the user explicitly asks for a shorter or different format, produce all of the following in this order:
 
-1. Short summary
-2. Bucket overall scoreboard
-3. Member scoreboard ordered by LTM revenue
+1. Bucket overall scoreboard
+2. Member scoreboard ordered by LTM revenue
+3. Short summary
 4. Bucket breadth summary
 5. Brief caveats if data coverage is incomplete
 
 Important:
 - A request to "summarize KPI trends" still requires the bucket overall scoreboard and the member scoreboard.
 - Do not replace the scoreboard with a prose-only summary unless the user explicitly asks for prose only.
+- Do not replace the codified scoreboard with a condensed classification table such as "Strong fundamentals / Mixed / Weak" unless the user explicitly asks for that format.
+- If the user asks for a "table", the default table is still the codified bucket overall scoreboard plus member scoreboard, not an improvised summary grid.
+- The codified scoreboard should lead the response unless the user explicitly asks for a different ordering.
 
 ## Default Scoreboard Format
 Use quarter-by-quarter trend strings when consecutive quarters are available.
@@ -161,13 +164,14 @@ For each company, show:
 
 Do not include delta-of-delta columns unless the user explicitly asks for them.
 
-When the user asks for "summary of KPI trends", the default response should still follow this scoreboard format after a short introductory summary.
+When the user asks for "summary of KPI trends", the default response should still lead with this scoreboard format, then provide summary commentary after it.
 
 ## Presentation Rules
 - Keep bucket summary concise and interpretation-first.
 - Use markdown for readability.
 - Prefer monospace labels and compact trend strings over narrative tables unless the user explicitly asks for tables.
 - Prefer breadth-first interpretation over outlier-driven interpretation.
+- Avoid subjective labels like `Strong fundamentals`, `Weak macro`, `Mature growth`, or similar unless the user explicitly asks for interpretation labels.
 - Preserve units exactly:
   - revenue YoY as percent
   - margin levels as percent
@@ -194,3 +198,7 @@ When the user asks for "summary of KPI trends", the default response should stil
 7. Build the bucket breadth summary.
 8. Build the company scoreboard ordered by LTM revenue.
 9. State the main conclusion in plain English before or above the scoreboard.
+
+## Hard Failure Avoidance
+- If the agent cannot access the CSV export or workbook, say so clearly and stop rather than substituting company markdown KPI prose as if it were the canonical KPI dataset.
+- If the agent can access the CSV export, it must not claim KPI uncertainty due to workbook access limits.
