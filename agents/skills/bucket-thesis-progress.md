@@ -130,6 +130,9 @@ Short concluding paragraph answering whether the thesis is more or less on track
 - Mention representative company examples when useful, not every company by default.
 - If KPI evidence supports the narrative, mention it briefly, but keep narrative evidence primary.
 - If the evidence is mixed, say so directly.
+- Judge thesis progress breadth-first across the bucket.
+- Treat large or economically important exceptions as important caveats, not automatic overrides of broad bucket evidence.
+- Do not default to weighted-average reasoning unless the user explicitly asks for a weighted view.
 
 ## Caveats To Mention When Relevant
 - company notes may not be equally current across all names
