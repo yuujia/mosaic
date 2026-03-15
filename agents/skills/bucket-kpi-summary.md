@@ -4,7 +4,7 @@ skill_name: Bucket KPI Summary
 skill_version: 1
 
 ## Purpose
-Provide a deterministic way to summarize a Mosaic bucket's KPI workbook, including:
+Provide a deterministic way to summarize a Mosaic bucket's KPIs, including:
 
 - bucket-level KPI summary
 - company scoreboard ordered by LTM revenue
@@ -27,11 +27,18 @@ Use the manifest to confirm:
 - `bucket_thesis_file`
 - companies currently listed in the bucket
 
-Then use the canonical KPI workbook:
+Then use the canonical KPI sources in this order:
+
+1. `00_config/kpi_exports/{BUCKET_FS}_kpi.csv`
+2. `buckets/{BUCKET_FS}/{BUCKET_FS}_kpi.xlsx`
+
+If the CSV export exists, treat it as the KPI source of truth for agent workflows because it is text-friendly and more reliable for GitHub-based agents.
+
+The canonical KPI workbook remains:
 
 - `buckets/{BUCKET_FS}/{BUCKET_FS}_kpi.xlsx`
 
-Do not rely on directory traversal as the primary way to find the workbook.
+Do not rely on directory traversal as the primary way to find KPI sources.
 
 ## Trigger Phrases
 Use this skill when the user asks for any of the following or something materially similar:
@@ -42,9 +49,12 @@ Use this skill when the user asks for any of the following or something material
 - are margins expanding or shrinking in bucket `X`
 - does bucket `X` imply earnings acceleration or deceleration
 - create a KPI scoreboard for bucket `X`
+- provide a summary of KPI trends for bucket `X`
 
 ## Data Source Rules
-- Prefer the bucket workbook over company markdown files for KPI analysis.
+- Prefer `00_config/kpi_exports/{BUCKET_FS}_kpi.csv` when it exists.
+- Otherwise use the bucket workbook.
+- Do not use company markdown files as the primary KPI source if the CSV export or workbook is available.
 - Treat each worksheet as one company unless the workbook clearly uses a different convention.
 - If a manifest company is missing from the workbook, note it briefly and exclude it from calculations.
 - Preserve reported values exactly; do not infer missing values.
@@ -96,12 +106,16 @@ Important:
 - Do not recompute bucket margin deltas from weighted margin levels unless the user explicitly asks for that alternate method.
 
 ## Default Output Structure
-Unless the user asks for something else, produce:
+Unless the user explicitly asks for a shorter or different format, produce all of the following:
 
 1. Short summary
 2. Bucket overall scoreboard
 3. Member scoreboard ordered by LTM revenue
 4. Brief caveats if data coverage is incomplete
+
+Important:
+- A request to "summarize KPI trends" still requires the bucket overall scoreboard and the member scoreboard.
+- Do not replace the scoreboard with a prose-only summary unless the user explicitly asks for prose only.
 
 ## Default Scoreboard Format
 Use quarter-by-quarter trend strings when consecutive quarters are available.
@@ -130,9 +144,12 @@ For each company, show:
 
 Do not include delta-of-delta columns unless the user explicitly asks for them.
 
+When the user asks for "summary of KPI trends", the default response should still follow this scoreboard format after a short introductory summary.
+
 ## Presentation Rules
 - Keep bucket summary concise and interpretation-first.
 - Use markdown for readability.
+- Prefer monospace labels and compact trend strings over narrative tables unless the user explicitly asks for tables.
 - Preserve units exactly:
   - revenue YoY as percent
   - margin levels as percent
@@ -152,7 +169,7 @@ Do not include delta-of-delta columns unless the user explicitly asks for them.
 ## Minimal Workflow
 1. Open the governance spec.
 2. Open `00_config/active_manifest.md` and confirm the bucket path.
-3. Open the bucket KPI workbook.
+3. Open `00_config/kpi_exports/{BUCKET_FS}_kpi.csv` if it exists; otherwise open the bucket KPI workbook.
 4. Extract normalized KPI rows if available; otherwise read worksheet matrices carefully.
 5. Compute LTM revenue weights.
 6. Build the bucket summary.
