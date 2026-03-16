@@ -1,6 +1,6 @@
 # Mosaic Architecture & Sync Governance Spec
-Version: 2.3
-Last Updated: 2026-03-03
+Version: 2.4
+Last Updated: 2026-03-15
 
 ---
 
@@ -37,7 +37,7 @@ Company folders and filenames must never begin with `.`.
 
 ---
 
-# 3. Filesystem Schema (v2.1)
+# 3. Filesystem Schema (v2.2)
 
 Canonical structure:
 
@@ -45,6 +45,7 @@ Mosaic/
   buckets/
     TESTS/
       TESTS_bucket_thesis.md
+      TESTS_note_index.md
       DGX/
         source/
         DGX.md
@@ -54,6 +55,7 @@ Rules:
 - No leading dots in folder names.
 - No intermediate `companies/` wrapper folders.
 - Bucket thesis file name is always `{BUCKET_FS}_bucket_thesis.md` (example: `TESTS_bucket_thesis.md`).
+- Bucket note index file name is always `{BUCKET_FS}_note_index.md` (example: `TESTS_note_index.md`).
 - Bucket symbol must not be embedded in filenames.
 - Folder name determines bucket identity on disk.
 - bucket_symbol remains inside file content only.
@@ -70,9 +72,11 @@ The sync system must:
 4. Ensure company folders exist directly under each bucket.
 5. Generate and maintain:
    - `{BUCKET_FS}_bucket_thesis.md`
+   - `{BUCKET_FS}_note_index.md`
    - `{BUCKET_FS}_kpi.xlsx` (seeded from `tools/templates/BUCKET_kpi_template.xlsx` when missing)
    - Company markdown files
    - company `source/` folders
+   - note-index references in active manifests
 6. Perform safe in-sync migration if dot-prefixed folders exist.
 7. Never overwrite user-authored content.
 8. Only modify managed sections.
@@ -92,6 +96,10 @@ Markdown files may contain managed blocks:
 <!-- MOSAIC:END:SECTION_NAME -->
 
 Sync may modify managed blocks only.
+
+Managed generated files may also be fully sync-owned when they are explicit architectural artifacts, such as:
+
+- `{BUCKET_FS}_note_index.md`
 
 User-owned sections include:
 - Quarterly Updates

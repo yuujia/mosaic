@@ -22,9 +22,10 @@ Primary workflow entry point for Mosaic agents.
 Steps:
 1. Open this file (active_manifest.md).
 2. Find the requested bucket section under "## Buckets".
-3. Open the listed bucket_thesis_file.
-4. Open each company_file listed in the bucket.
-5. Apply extraction/scanning rules defined in: agents/skills/analyst.md
+3. Open the listed bucket_note_index_file when available.
+4. Open the listed bucket_thesis_file.
+5. Open each company_file listed in the bucket.
+6. Apply extraction/scanning rules defined in: agents/skills/analyst.md
 
 - Agents must not assume directory listing is available; they should use manifest paths.
 """
@@ -157,6 +158,7 @@ def _render_buckets_block(
     for bucket_id in sorted(buckets.keys(), key=str.upper):
         bucket_data = buckets[bucket_id]
         bucket_symbol = str(bucket_data["bucket_symbol"] or "")
+        bucket_note_index_file = str(bucket_data["bucket_note_index_file"] or "")
         bucket_thesis_file = str(bucket_data["bucket_thesis_file"] or "")
         companies = sorted(bucket_data["companies"], key=lambda item: str(item["ticker"]).upper())
 
@@ -169,6 +171,7 @@ def _render_buckets_block(
                 f"- bucket_id: `{bucket_id}`",
                 f"- bucket_symbol: `{bucket_symbol}`",
                 f"- bucket_path: `buckets/{bucket_id}/`",
+                f"- bucket_note_index_file: `{bucket_note_index_file}`",
                 f"- bucket_thesis_file: `{bucket_thesis_file}`",
                 "",
                 "| ticker | side | company_file |",
@@ -205,6 +208,17 @@ def _bucket_thesis_path(root: Path, bucket_id: str) -> tuple[str, str]:
     return (fallback.as_posix(), label)
 
 
+def _bucket_note_index_path(root: Path, bucket_id: str) -> tuple[str, str]:
+    candidates: list[tuple[Path, str]] = [
+        (Path("buckets") / bucket_id / f"{bucket_id}_note_index.md", "buckets/<BUCKET_ID>/<BUCKET_ID>_note_index.md"),
+    ]
+    existing = _first_existing(root, [p for p, _ in candidates])
+    if existing is not None:
+        return (existing.as_posix(), candidates[0][1])
+    fallback, label = candidates[0]
+    return (fallback.as_posix(), label)
+
+
 def _company_file_path(root: Path, bucket_id: str, ticker: str) -> tuple[str, str]:
     candidates: list[tuple[Path, str]] = [
         (Path("buckets") / bucket_id / ticker / f"{ticker}.md", "buckets/<BUCKET_ID>/<TICKER>/<TICKER>.md"),
@@ -237,20 +251,24 @@ def write_active_manifests(
 
     buckets: dict[str, dict[str, object]] = {}
     thesis_conventions: set[str] = set()
+    note_index_conventions: set[str] = set()
     company_conventions: set[str] = set()
     global_rows: list[tuple[str, str, str]] = []
     csv_rows: list[list[str]] = []
 
     for entry in ordered:
         thesis_file, thesis_convention = _bucket_thesis_path(mosaic_root, entry.bucket_id)
+        note_index_file, note_index_convention = _bucket_note_index_path(mosaic_root, entry.bucket_id)
         company_file, company_convention = _company_file_path(mosaic_root, entry.bucket_id, entry.ticker)
         thesis_conventions.add(thesis_convention)
+        note_index_conventions.add(note_index_convention)
         company_conventions.add(company_convention)
 
         bucket_data = buckets.setdefault(
             entry.bucket_id,
             {
                 "bucket_symbol": entry.bucket_symbol,
+                "bucket_note_index_file": note_index_file,
                 "bucket_thesis_file": thesis_file,
                 "companies": [],
             },
@@ -276,6 +294,7 @@ def write_active_manifests(
                 entry.ticker,
                 entry.side,
                 "true" if entry.is_active else "false",
+                note_index_file,
                 thesis_file,
                 company_file,
             ]
@@ -289,6 +308,13 @@ def write_active_manifests(
         thesis_convention_text = "mixed existing paths (" + ", ".join(sorted(thesis_conventions)) + ")"
     else:
         thesis_convention_text = "buckets/<BUCKET_ID>/<BUCKET_ID>_bucket_thesis.md"
+
+    if len(note_index_conventions) == 1:
+        note_index_convention_text = next(iter(note_index_conventions))
+    elif note_index_conventions:
+        note_index_convention_text = "mixed existing paths (" + ", ".join(sorted(note_index_conventions)) + ")"
+    else:
+        note_index_convention_text = "buckets/<BUCKET_ID>/<BUCKET_ID>_note_index.md"
 
     if len(company_conventions) == 1:
         company_convention_text = next(iter(company_conventions))
@@ -315,6 +341,7 @@ def write_active_manifests(
             "",
             "## Conventions",
             "- Paths are relative to the Mosaic root.",
+            f"- Bucket note index convention: `{note_index_convention_text}`",
             f"- Bucket thesis convention: `{thesis_convention_text}`",
             f"- Company file convention: `{company_convention_text}`",
             "- Buckets are sorted A->Z and tickers are sorted A->Z.",
@@ -357,6 +384,7 @@ def write_active_manifests(
         "ticker",
         "side",
         "is_active",
+        "bucket_note_index_file",
         "bucket_thesis_file",
         "company_file",
     ]

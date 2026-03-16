@@ -135,6 +135,105 @@ def create_bucket_kpi_file(kpi_path: Path, template_path: Path, dry_run: bool) -
     return True
 
 
+def write_managed_file(path: Path, content: str, dry_run: bool) -> bool:
+    """Write a managed generated file only when its content changes."""
+    normalized = content.rstrip() + "\n"
+    existed = path.exists()
+    if existed and path.read_text(encoding="utf-8") == normalized:
+        return False
+    action = "update" if existed else "create"
+    if dry_run:
+        print(f"[DRY] {action}: {path}")
+        return True
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(normalized, encoding="utf-8")
+    print(f"[APPLY] {action}: {path}")
+    return True
+
+
+def extract_note_sections(md_path: Path) -> list[str]:
+    """Return top-level note section headings from a company markdown file."""
+    if not md_path.exists():
+        return []
+    text = md_path.read_text(encoding="utf-8", errors="ignore")
+    return [match.group(1).strip() for match in re.finditer(r"^##\s+(.+)$", text, re.M)]
+
+
+def extract_diligence_questions(md_path: Path) -> list[str]:
+    """Return explicit diligence question bullets from a company markdown file."""
+    if not md_path.exists():
+        return []
+    text = md_path.read_text(encoding="utf-8", errors="ignore")
+    match = re.search(r"^### Diligence Questions\s*\n(.*?)(?=^### |\Z)", text, flags=re.S | re.M)
+    if not match:
+        match = re.search(r"^## Diligence Questions\s*\n(.*?)(?=^## |\Z)", text, flags=re.S | re.M)
+    if not match:
+        return []
+    questions: list[str] = []
+    for line in match.group(1).splitlines():
+        stripped = line.strip()
+        if stripped.startswith("- "):
+            question = stripped[2:].strip()
+            if question:
+                questions.append(question)
+    return questions
+
+
+def render_bucket_note_index(
+    fs_bucket: str,
+    bucket_symbol_value: str,
+    bucket_dir: Path,
+    company_tickers: list[str],
+    today: str,
+) -> str:
+    """Render a connector-safe direct path note index for a bucket."""
+    lines = [
+        f"# {fs_bucket} Bucket Note Index",
+        "",
+        f"Bucket Symbol: {bucket_symbol_value}",
+        f"Bucket Folder: {fs_bucket}",
+        f"Generated On: {today}",
+        "",
+        "## Agent Use",
+        "",
+        "- Use this file when connector directory traversal is unreliable.",
+        "- Open the explicit paths listed below rather than relying on folder enumeration.",
+        "",
+        "## Bucket Files",
+        "",
+        f"- bucket_note_index_file: `buckets/{fs_bucket}/{fs_bucket}_note_index.md`",
+        f"- bucket_thesis_file: `buckets/{fs_bucket}/{fs_bucket}_bucket_thesis.md`",
+        f"- bucket_kpi_csv_file: `00_config/kpi_exports/{fs_bucket}_kpi.csv`",
+        f"- bucket_kpi_workbook_file: `buckets/{fs_bucket}/{fs_bucket}_kpi.xlsx`",
+        "",
+        "## Company Notes",
+        "",
+    ]
+
+    for ticker in sorted(company_tickers, key=str.upper):
+        company_md = bucket_dir / ticker / f"{ticker}.md"
+        sections = extract_note_sections(company_md)
+        questions = extract_diligence_questions(company_md)
+        latest_section = sections[0] if sections else "(none)"
+        available_sections = ", ".join(f"`{section}`" for section in sections[:6]) if sections else "(none)"
+        lines.extend(
+            [
+                f"### {ticker}",
+                f"- company_file: `buckets/{fs_bucket}/{ticker}/{ticker}.md`",
+                f"- latest_note_section: `{latest_section}`",
+                f"- available_note_sections: {available_sections}",
+                f"- diligence_questions: {'none populated' if not questions else f'{len(questions)} populated'}",
+            ]
+        )
+        if questions:
+            lines.append("")
+            for question in questions:
+                lines.append(f"  - {question}")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
 def move_path(src: Path, dst: Path, dry_run: bool) -> bool:
     """Move a file/folder only when destination does not exist."""
     if dst.exists():
@@ -268,6 +367,7 @@ def run_sync(mosaic_root: Path, apply: bool, archive_stale_buckets_flag: bool) -
     created_count = 0
     bucket_thesis_created_count = 0
     bucket_kpi_created_count = 0
+    bucket_note_index_written_count = 0
     moved_count = 0
     conflict_count = 0
     stale_detected_count = 0
@@ -275,6 +375,8 @@ def run_sync(mosaic_root: Path, apply: bool, archive_stale_buckets_flag: bool) -
     stale_conflict_count = 0
     migrated_buckets: set[Path] = set()
     active_buckets: set[str] = set()
+    bucket_symbols: dict[str, str] = {}
+    bucket_company_keys: dict[str, set[str]] = {}
     manifest_entries: list[ManifestEntry] = []
 
     for _, row in df.iterrows():
@@ -294,6 +396,8 @@ def run_sync(mosaic_root: Path, apply: bool, archive_stale_buckets_flag: bool) -
         if not key or not fs_bucket:
             continue
         active_buckets.add(fs_bucket)
+        bucket_symbols.setdefault(fs_bucket, raw_bucket_symbol)
+        bucket_company_keys.setdefault(fs_bucket, set()).add(key)
 
         company_name = str(row.get("name", "") or "").strip()
         side = str(row.get("side", "") or "").strip()
@@ -353,6 +457,19 @@ def run_sync(mosaic_root: Path, apply: bool, archive_stale_buckets_flag: bool) -
             )
         )
 
+    for fs_bucket in sorted(active_buckets, key=str.upper):
+        bucket_dir = buckets_root / fs_bucket
+        note_index_path = bucket_dir / f"{fs_bucket}_note_index.md"
+        note_index_text = render_bucket_note_index(
+            fs_bucket=fs_bucket,
+            bucket_symbol_value=bucket_symbols.get(fs_bucket, ""),
+            bucket_dir=bucket_dir,
+            company_tickers=sorted(bucket_company_keys.get(fs_bucket, set()), key=str.upper),
+            today=today,
+        )
+        if write_managed_file(note_index_path, note_index_text, dry_run=dry_run):
+            bucket_note_index_written_count += 1
+
     if archive_stale_buckets_flag:
         stale_detected_count, stale_archived_count, stale_conflict_count = archive_stale_buckets(
             buckets_root=buckets_root,
@@ -372,6 +489,7 @@ def run_sync(mosaic_root: Path, apply: bool, archive_stale_buckets_flag: bool) -
     print(f"Markdown files created: {created_count}")
     print(f"Bucket thesis files created: {bucket_thesis_created_count}")
     print(f"Bucket KPI files created: {bucket_kpi_created_count}")
+    print(f"Bucket note index files written: {bucket_note_index_written_count}")
     print(f"Legacy paths migrated: {moved_count}")
     print(f"Migration conflicts: {conflict_count}")
     if archive_stale_buckets_flag:
