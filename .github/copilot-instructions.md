@@ -15,10 +15,11 @@ Important local skills:
 Preferred research entry point:
 
 - `00_config/active_manifest.md`
+- bucket-level `{BUCKET_FS}_note_index.md` files when listed in the manifest
 
 Notes:
 
 - Do not rely on directory traversal as the primary discovery mechanism when the manifest provides direct paths.
+- Prefer bucket note index files for connector-safe company note discovery.
 - Prefer the bucket KPI workbook plus any exported text mirrors under `00_config/kpi_exports/` for KPI analysis.
 - Preserve the repository's canonical bucket filesystem rules from the architecture spec.
-

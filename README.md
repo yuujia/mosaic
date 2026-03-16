@@ -10,6 +10,10 @@ Agents should start with:
 - `agents/specs/Mosaic_Architecture_and_Sync_Spec.md`
 - `00_config/active_manifest.md`
 
+For connector-safe bucket research, use the managed bucket note indexes:
+
+- `buckets/{BUCKET_FS}/{BUCKET_FS}_note_index.md`
+
 Repo-local skills live under `agents/skills/`.
 
 For GitHub-hosted agents and ChatGPT-style access, prefer the text KPI mirrors under:

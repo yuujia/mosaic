@@ -2,7 +2,7 @@
 mosaic_anchor: ACTIVE_MANIFEST
 mosaic_project: Mosaic
 mosaic_schema_version: 1
-generated_on: 2026-03-10
+generated_on: 2026-03-15
 source_file: 00_config/active_portfolio.xlsx
 source_of_truth: 00_config/active_portfolio.xlsx
 
@@ -33,6 +33,7 @@ Notes:
 - bucket_id: `AGENTICS`
 - bucket_symbol: `.AGENTICS`
 - bucket_path: `buckets/AGENTICS/`
+- bucket_note_index_file: `buckets/AGENTICS/AGENTICS_note_index.md`
 - bucket_thesis_file: `buckets/AGENTICS/AGENTICS_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -64,6 +65,7 @@ Notes:
 - bucket_id: `AIOUT`
 - bucket_symbol: `.AIOUT`
 - bucket_path: `buckets/AIOUT/`
+- bucket_note_index_file: `buckets/AIOUT/AIOUT_note_index.md`
 - bucket_thesis_file: `buckets/AIOUT/AIOUT_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -93,6 +95,7 @@ Notes:
 - bucket_id: `BUILD`
 - bucket_symbol: `.BUILD`
 - bucket_path: `buckets/BUILD/`
+- bucket_note_index_file: `buckets/BUILD/BUILD_note_index.md`
 - bucket_thesis_file: `buckets/BUILD/BUILD_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -107,6 +110,7 @@ Notes:
 - bucket_id: `CANCER`
 - bucket_symbol: `.CANCER`
 - bucket_path: `buckets/CANCER/`
+- bucket_note_index_file: `buckets/CANCER/CANCER_note_index.md`
 - bucket_thesis_file: `buckets/CANCER/CANCER_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -122,6 +126,7 @@ Notes:
 - bucket_id: `Cash`
 - bucket_symbol: `Cash`
 - bucket_path: `buckets/Cash/`
+- bucket_note_index_file: `buckets/Cash/Cash_note_index.md`
 - bucket_thesis_file: `buckets/Cash/Cash_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -132,6 +137,7 @@ Notes:
 - bucket_id: `CASINO`
 - bucket_symbol: `.CASINO`
 - bucket_path: `buckets/CASINO/`
+- bucket_note_index_file: `buckets/CASINO/CASINO_note_index.md`
 - bucket_thesis_file: `buckets/CASINO/CASINO_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -145,6 +151,7 @@ Notes:
 - bucket_id: `CHINAS`
 - bucket_symbol: `.CHINAS`
 - bucket_path: `buckets/CHINAS/`
+- bucket_note_index_file: `buckets/CHINAS/CHINAS_note_index.md`
 - bucket_thesis_file: `buckets/CHINAS/CHINAS_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -166,6 +173,7 @@ Notes:
 - bucket_id: `CRYPTO`
 - bucket_symbol: `.CRYPTO`
 - bucket_path: `buckets/CRYPTO/`
+- bucket_note_index_file: `buckets/CRYPTO/CRYPTO_note_index.md`
 - bucket_thesis_file: `buckets/CRYPTO/CRYPTO_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -181,6 +189,7 @@ Notes:
 - bucket_id: `DATASRVS`
 - bucket_symbol: `.DATASRVS`
 - bucket_path: `buckets/DATASRVS/`
+- bucket_note_index_file: `buckets/DATASRVS/DATASRVS_note_index.md`
 - bucket_thesis_file: `buckets/DATASRVS/DATASRVS_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -204,6 +213,7 @@ Notes:
 - bucket_id: `DCSHORTS`
 - bucket_symbol: `.DCSHORTS`
 - bucket_path: `buckets/DCSHORTS/`
+- bucket_note_index_file: `buckets/DCSHORTS/DCSHORTS_note_index.md`
 - bucket_thesis_file: `buckets/DCSHORTS/DCSHORTS_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -226,6 +236,7 @@ Notes:
 - bucket_id: `DRIVE`
 - bucket_symbol: `.DRIVE`
 - bucket_path: `buckets/DRIVE/`
+- bucket_note_index_file: `buckets/DRIVE/DRIVE_note_index.md`
 - bucket_thesis_file: `buckets/DRIVE/DRIVE_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -240,6 +251,7 @@ Notes:
 - bucket_id: `DTECH`
 - bucket_symbol: `.DTECH`
 - bucket_path: `buckets/DTECH/`
+- bucket_note_index_file: `buckets/DTECH/DTECH_note_index.md`
 - bucket_thesis_file: `buckets/DTECH/DTECH_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -254,6 +266,7 @@ Notes:
 - bucket_id: `ECOMM`
 - bucket_symbol: `.ECOMM`
 - bucket_path: `buckets/ECOMM/`
+- bucket_note_index_file: `buckets/ECOMM/ECOMM_note_index.md`
 - bucket_thesis_file: `buckets/ECOMM/ECOMM_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -271,6 +284,7 @@ Notes:
 - bucket_id: `HCSUP`
 - bucket_symbol: `.HCSUP`
 - bucket_path: `buckets/HCSUP/`
+- bucket_note_index_file: `buckets/HCSUP/HCSUP_note_index.md`
 - bucket_thesis_file: `buckets/HCSUP/HCSUP_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -294,6 +308,7 @@ Notes:
 - bucket_id: `HOTEL`
 - bucket_symbol: `.HOTEL`
 - bucket_path: `buckets/HOTEL/`
+- bucket_note_index_file: `buckets/HOTEL/HOTEL_note_index.md`
 - bucket_thesis_file: `buckets/HOTEL/HOTEL_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -312,6 +327,7 @@ Notes:
 - bucket_id: `Index`
 - bucket_symbol: `Index`
 - bucket_path: `buckets/Index/`
+- bucket_note_index_file: `buckets/Index/Index_note_index.md`
 - bucket_thesis_file: `buckets/Index/Index_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -322,6 +338,7 @@ Notes:
 - bucket_id: `INDOPS`
 - bucket_symbol: `.INDOPS`
 - bucket_path: `buckets/INDOPS/`
+- bucket_note_index_file: `buckets/INDOPS/INDOPS_note_index.md`
 - bucket_thesis_file: `buckets/INDOPS/INDOPS_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -337,6 +354,7 @@ Notes:
 - bucket_id: `INF`
 - bucket_symbol: `.INF`
 - bucket_path: `buckets/INF/`
+- bucket_note_index_file: `buckets/INF/INF_note_index.md`
 - bucket_thesis_file: `buckets/INF/INF_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -351,6 +369,7 @@ Notes:
 - bucket_id: `LAW`
 - bucket_symbol: `.LAW`
 - bucket_path: `buckets/LAW/`
+- bucket_note_index_file: `buckets/LAW/LAW_note_index.md`
 - bucket_thesis_file: `buckets/LAW/LAW_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -364,6 +383,7 @@ Notes:
 - bucket_id: `MAHA`
 - bucket_symbol: `.MAHA`
 - bucket_path: `buckets/MAHA/`
+- bucket_note_index_file: `buckets/MAHA/MAHA_note_index.md`
 - bucket_thesis_file: `buckets/MAHA/MAHA_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -386,6 +406,7 @@ Notes:
 - bucket_id: `MDAS`
 - bucket_symbol: `.MDAS`
 - bucket_path: `buckets/MDAS/`
+- bucket_note_index_file: `buckets/MDAS/MDAS_note_index.md`
 - bucket_thesis_file: `buckets/MDAS/MDAS_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -411,6 +432,7 @@ Notes:
 - bucket_id: `MTECH`
 - bucket_symbol: `.MTECH`
 - bucket_path: `buckets/MTECH/`
+- bucket_note_index_file: `buckets/MTECH/MTECH_note_index.md`
 - bucket_thesis_file: `buckets/MTECH/MTECH_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -425,6 +447,7 @@ Notes:
 - bucket_id: `POWR`
 - bucket_symbol: `.POWR`
 - bucket_path: `buckets/POWR/`
+- bucket_note_index_file: `buckets/POWR/POWR_note_index.md`
 - bucket_thesis_file: `buckets/POWR/POWR_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -439,6 +462,7 @@ Notes:
 - bucket_id: `PRIVATE`
 - bucket_symbol: `.PRIVATE`
 - bucket_path: `buckets/PRIVATE/`
+- bucket_note_index_file: `buckets/PRIVATE/PRIVATE_note_index.md`
 - bucket_thesis_file: `buckets/PRIVATE/PRIVATE_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -455,6 +479,7 @@ Notes:
 - bucket_id: `REST`
 - bucket_symbol: `.REST`
 - bucket_path: `buckets/REST/`
+- bucket_note_index_file: `buckets/REST/REST_note_index.md`
 - bucket_thesis_file: `buckets/REST/REST_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -476,6 +501,7 @@ Notes:
 - bucket_id: `STABLE`
 - bucket_symbol: `.STABLE`
 - bucket_path: `buckets/STABLE/`
+- bucket_note_index_file: `buckets/STABLE/STABLE_note_index.md`
 - bucket_thesis_file: `buckets/STABLE/STABLE_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -486,6 +512,7 @@ Notes:
 - bucket_id: `STABLECO`
 - bucket_symbol: `.STABLECO`
 - bucket_path: `buckets/STABLECO/`
+- bucket_note_index_file: `buckets/STABLECO/STABLECO_note_index.md`
 - bucket_thesis_file: `buckets/STABLECO/STABLECO_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -504,6 +531,7 @@ Notes:
 - bucket_id: `TESTS`
 - bucket_symbol: `.TESTS`
 - bucket_path: `buckets/TESTS/`
+- bucket_note_index_file: `buckets/TESTS/TESTS_note_index.md`
 - bucket_thesis_file: `buckets/TESTS/TESTS_bucket_thesis.md`
 
 | ticker | side | company_file |
@@ -519,6 +547,7 @@ Notes:
 - bucket_id: `TRANSPOR`
 - bucket_symbol: `.TRANSPOR`
 - bucket_path: `buckets/TRANSPOR/`
+- bucket_note_index_file: `buckets/TRANSPOR/TRANSPOR_note_index.md`
 - bucket_thesis_file: `buckets/TRANSPOR/TRANSPOR_bucket_thesis.md`
 
 | ticker | side | company_file |

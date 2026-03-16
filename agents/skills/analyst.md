@@ -22,8 +22,9 @@ Do not attempt directory traversal as a primary discovery mechanism.
 ## How to Locate Files
 1. Open `00_config/active_manifest.md`.
 2. Find the target bucket section under `## Buckets` (e.g., `### TESTS`).
-3. Use the listed `bucket_thesis_file` and the `company_file` paths for that bucket.
-4. Open those files directly by path.
+3. Use the listed `bucket_note_index_file`, `bucket_thesis_file`, and `company_file` paths for that bucket.
+4. Prefer opening the bucket note index first when connector directory traversal is unreliable.
+5. Open the listed files directly by path.
 
 Authoritative routing:
 - Use paths listed inside:
@@ -37,7 +38,12 @@ Authoritative routing:
 Look for a section header exactly:
 `## Diligence Questions`
 
+Or:
+`### Diligence Questions`
+
 Extract each bullet item under that header until the next `##` header.
+
+Do not infer diligence questions from other note text. Extract only explicit bullet items under these headers.
 
 Output columns:
 - bucket_id
