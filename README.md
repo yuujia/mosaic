@@ -2,6 +2,14 @@
 
 Operational workspace for Mosaic portfolio, bucket, and migration tooling.
 
+## Python Setup
+
+Install the Python dependency used by the workbook-based tools:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
 ## AI Agent Entry
 
 Agents should start with:

@@ -1,0 +1,85 @@
+NEO
+
+Recent quarter trend
+- Q4 2025 revenue growth: +10.5%
+- Q4 2025 test-volume growth: +10.7%
+- Q4 2025 revenue per test: about $488, up +4.9%
+- Quarter read: revenue decelerated, gross margin still contracted YoY, but G&A savings helped offset that
+- Operational read: shifting capacity toward higher-value categories, so slower growth but improving mix
+
+Forward quarter trend
+- Q1 2026 revenue growth: +9.9%
+- Q2 2026 revenue growth: +8.4%
+- Q3 2026 revenue growth: +9.6%
+- Q4 2026 revenue growth: +10.8%
+- Q1 2026 test-volume growth: +6.0%
+- Q2 2026 test-volume growth: +3.0%
+- Q3 2026 test-volume growth: +5.5%
+- Q4 2026 test-volume growth: +6.0%
+- Q1 2026 revenue per test growth: +6.0%
+- Q2 2026 revenue per test growth: +6.5%
+- Q3 2026 revenue per test growth: +5.0%
+- Q4 2026 revenue per test growth: +5.5%
+- Forward read: estimates assume low-to-mid single-digit volume growth, with pricing and mix doing a lot of the work
+
+Guidance
+- FY26 revenue: $793M-$801M, about +9.7%
+- Volume growth: low-to-mid single digits
+- Pricing: upper single digits
+- Revenue cadence: about 10% in Q1, 8-9% in Q2, 9-10% in Q3, >10% in Q4
+- RaDaR ST contribution: mid-single-digit millions
+- EBITDA: $55M-$57M, up 27-31%
+
+Upside drivers
+- RaDaR ST gets two additional indications through MolDX
+- PanTracer LBx contribution improves after coverage and 2H26 ramp
+- PanTracer Tissue continues strong growth, helped by PanTracer Pro
+- Higher-value mix lifts revenue per test more than expected
+
+Risks
+- Pharma business declines before next-gen RaDaR fills the gap
+- Rationalizing older tests costs more volume than expected
+- Broad genomic profiling remains competitive and mature
+- If mix shift slows, pricing has to do too much of the work
+
+
+VCYT
+
+Recent quarter trend
+- Q4 2025 revenue growth: +18.5%
+- Q4 2025 test-volume growth: +16.2%
+- Q4 2025 revenue per test: about $2,988, up +4.2%
+- Quarter read: revenues kept accelerating and margin expansion accelerated further
+- Main drivers: Decipher growth of 21% and Afirma growth of 12%, though total test-volume growth slowed from Q3
+
+Forward quarter trend
+- Q1 2026 revenue growth: +13.8%
+- Q2 2026 revenue growth: +13.1%
+- Q3 2026 revenue growth: +10.8%
+- Q4 2026 revenue growth: +9.1%
+- Q1 2026 test-volume growth: +14.5%
+- Q2 2026 test-volume growth: +16.6%
+- Q3 2026 test-volume growth: +12.8%
+- Q4 2026 test-volume growth: +13.6%
+- Q1 2026 revenue per test growth: +3.0%
+- Q2 2026 revenue per test growth: +0.7%
+- Q3 2026 revenue per test growth: -0.8%
+- Q4 2026 revenue per test growth: -3.0%
+- Forward read: growth stays healthy but decelerates, and the model assumes less help from pricing in the back half
+
+Guidance
+- FY26 revenue: $570M-$582M, about +12% versus +16% last year
+- Guidance does not include contribution from TrueMRD or Prosigna LDT
+
+Upside drivers
+- TrueMRD launch contribution is not in guidance
+- Prosigna LDT launch contribution is not in guidance
+- Decipher remains a strong growth engine
+- If mix stays favorable, revenue per test may hold up better than current estimates assume
+
+Risks
+- Prosigna LDT launch could create execution or margin headwinds
+- TrueMRD still needs to convert submission into real reimbursement and contribution
+- Afirma is decelerating toward mid-single-digit growth
+- MRD is a more competitive market, so TrueMRD may face tougher adoption and pricing dynamics
+- If mix weakens more than expected, back-half pricing could disappoint further

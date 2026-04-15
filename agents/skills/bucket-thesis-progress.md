@@ -88,6 +88,13 @@ Then provide:
 - rationale paragraph
 - concise conclusion on whether the thesis is more or less on track than last quarter
 
+If the user later asks for counts of `Green`, `Yellow-Green`, `Yellow`, `Yellow-Red`, or `Red`, do one of the following:
+
+- if the company notes contain an explicit, consistently populated per-company signal field, use it and say so
+- otherwise derive the count from the latest company note evidence using the color framework in this skill, and say that the counts are agent-derived rather than note-authored
+
+Do not imply that a canonical per-company `signal:` field exists unless it is actually present and populated.
+
 ## Progress Color Framework
 Use a simple color-style label:
 
@@ -133,6 +140,8 @@ Short concluding paragraph answering whether the thesis is more or less on track
 - Judge thesis progress breadth-first across the bucket.
 - Treat large or economically important exceptions as important caveats, not automatic overrides of broad bucket evidence.
 - Do not default to weighted-average reasoning unless the user explicitly asks for a weighted view.
+- When the breadth evidence is mostly confirming but meaningful offsets remain, prefer `Yellow-Green` over `Yellow-Red`.
+- Reserve `Yellow-Red` for cases where disconfirming evidence is actually broader than confirming evidence.
 
 ## Caveats To Mention When Relevant
 - company notes may not be equally current across all names

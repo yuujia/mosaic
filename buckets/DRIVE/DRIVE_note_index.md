@@ -2,7 +2,7 @@
 
 Bucket Symbol: .DRIVE
 Bucket Folder: DRIVE
-Generated On: 2026-03-15
+Generated On: 2026-04-15
 
 ## Agent Use
 
@@ -44,6 +44,6 @@ Generated On: 2026-03-15
 
 ### VVV
 - company_file: `buckets/DRIVE/VVV/VVV.md`
-- latest_note_section: `{{latest_calendar_period}}`
-- available_note_sections: `{{latest_calendar_period}}`
+- latest_note_section: `Thematic Color`
+- available_note_sections: `Thematic Color`, `Diligence Questions`, `2025 Q4`
 - diligence_questions: none populated

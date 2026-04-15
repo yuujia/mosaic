@@ -5,49 +5,47 @@ bucket_name: Industrial Transportation
 ticker: CSX
 company_name: CSX CORP
 side: Long
-last_updated: 2026-02-28
+last_updated: 2026-03-26
+---
+
+# Thesis
+
+## Thematic Color
+- 
+
+## Diligence Questions
+- 
 ---
 
 # Quarterly / Event Updates
 
-# Quarterly / Event Updates
-
-## {{latest_fiscal_period}}
-event_date: {{latest_event_date}}
-fiscal_period: {{latest_fiscal_period}}
+## 2025 Q4
+calendar_quarter: 2025 Q4
+event_date: 2026-01-22
+fiscal_period: 2025 Q4
 
 ### Major Announcements and Changes
-- 
+- Announced FY26 guidance that missed on revenues and in-line on operating margins
 
-### KPI Assessment
-- 
+### Quarterly KPI Assessment
+- Revenues growth of -1% yoy flat on rate of change basis, margins inflect to yoy expansion.
 
-### Thesis On Track
-- 
+### Key KPI Drivers
+- Operating ratio peaking: 67% (up 118 bps yoy) vs. 64% last quarter (up 156 bps yoy) 
 
-### Thesis Off Track
-- 
+### Forward Trajectory
+- Margin expansion: FY26 outlook of 200-300 bps margin expansion, OR of 63.8%-64.8%
+- Revenue acceleration: Low-single-digit growth, compared to -3% last year
 
-### Idiosyncratic Issues
-- 
+### Upside Drivers
+- Carload volume: guidance assumes flat industrial production and modest GDP growth. coal, minerals, fertilizer, intermodal are strong, but manufacturing and housing is weak. 
+- Operating ratio: "non-labor" productivity after recent capex projects finished (Howard Tunnel, Blue Ridge) 
 
-### Thematic Color
-- 
+### Risk Factors (Macro, Execution, Structural)
+- Macro: relative strength in coal and other low RPU carloads hurts price mix.
+- Macro: Downside to "modest GDP" assumption 
+- Structural: UNP-NSC merger could mean higher price competition 
 
-### Diligence Questions
-- 
-
-### Thesis Progress
-signal: {{signal}}   # Green / Yellow / Red
-rationale: 
-
-### Fail Point Check
-
-#### Macro Issues
-- 
-
-#### Execution Issues
-- 
-
-#### Structural Breaks
-- 
+### Bucket Implications
+- Secular thesis: margin improvements without macro improvements confirm bucket thesis
+- Risk from macro: if GDP weakness enough it will more than offset secular growth

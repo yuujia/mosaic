@@ -290,6 +290,7 @@ def write_active_manifests(
         csv_rows.append(
             [
                 entry.bucket_id,
+                entry.bucket_id,
                 entry.bucket_symbol,
                 entry.ticker,
                 entry.side,
@@ -380,6 +381,7 @@ def write_active_manifests(
 
     csv_header = [
         "bucket_id",
+        "bucket_fs",
         "bucket_symbol",
         "ticker",
         "side",

@@ -2,7 +2,7 @@
 mosaic_anchor: ACTIVE_MANIFEST
 mosaic_project: Mosaic
 mosaic_schema_version: 1
-generated_on: 2026-03-15
+generated_on: 2026-04-15
 source_file: 00_config/active_portfolio.xlsx
 source_of_truth: 00_config/active_portfolio.xlsx
 
@@ -90,6 +90,21 @@ Notes:
 | TTEC | Short | buckets/AIOUT/TTEC/TTEC.md |
 | UPWK | Short | buckets/AIOUT/UPWK/UPWK.md |
 | WPP | Short | buckets/AIOUT/WPP/WPP.md |
+
+### BASELOAD
+- bucket_id: `BASELOAD`
+- bucket_symbol: `.BASELOAD`
+- bucket_path: `buckets/BASELOAD/`
+- bucket_note_index_file: `buckets/BASELOAD/BASELOAD_note_index.md`
+- bucket_thesis_file: `buckets/BASELOAD/BASELOAD_bucket_thesis.md`
+
+| ticker | side | company_file |
+|---|---|---|
+| CCJ | Long | buckets/BASELOAD/CCJ/CCJ.md |
+| CW | Long | buckets/BASELOAD/CW/CW.md |
+| GEV | Long | buckets/BASELOAD/GEV/GEV.md |
+| HUBB | Long | buckets/BASELOAD/HUBB/HUBB.md |
+| WMB | Long | buckets/BASELOAD/WMB/WMB.md |
 
 ### BUILD
 - bucket_id: `BUILD`
@@ -273,7 +288,6 @@ Notes:
 |---|---|---|
 | BKNG | Short | buckets/ECOMM/BKNG/BKNG.md |
 | BRZE | Short | buckets/ECOMM/BRZE/BRZE.md |
-| DOCN | Short | buckets/ECOMM/DOCN/DOCN.md |
 | EXPE | Short | buckets/ECOMM/EXPE/EXPE.md |
 | HUBS | Short | buckets/ECOMM/HUBS/HUBS.md |
 | KVYO | Short | buckets/ECOMM/KVYO/KVYO.md |
@@ -374,10 +388,10 @@ Notes:
 
 | ticker | side | company_file |
 |---|---|---|
-| AXON | Long | buckets/LAW/AXON/AXON.md |
-| CDRE | Long | buckets/LAW/CDRE/CDRE.md |
-| CLBT | Long | buckets/LAW/CLBT/CLBT.md |
-| MSI | Long | buckets/LAW/MSI/MSI.md |
+| AXON | Short | buckets/LAW/AXON/AXON.md |
+| CDRE | Short | buckets/LAW/CDRE/CDRE.md |
+| CLBT | Short | buckets/LAW/CLBT/CLBT.md |
+| MSI | Short | buckets/LAW/MSI/MSI.md |
 
 ### MAHA
 - bucket_id: `MAHA`
@@ -497,17 +511,6 @@ Notes:
 | SG | Short | buckets/REST/SG/SG.md |
 | TXRH | Short | buckets/REST/TXRH/TXRH.md |
 
-### STABLE
-- bucket_id: `STABLE`
-- bucket_symbol: `.STABLE`
-- bucket_path: `buckets/STABLE/`
-- bucket_note_index_file: `buckets/STABLE/STABLE_note_index.md`
-- bucket_thesis_file: `buckets/STABLE/STABLE_bucket_thesis.md`
-
-| ticker | side | company_file |
-|---|---|---|
-| MQ | Short | buckets/STABLE/MQ/MQ.md |
-
 ### STABLECO
 - bucket_id: `STABLECO`
 - bucket_symbol: `.STABLECO`
@@ -522,6 +525,7 @@ Notes:
 | FISV | Short | buckets/STABLECO/FISV/FISV.md |
 | GPN | Short | buckets/STABLECO/GPN/GPN.md |
 | MA | Short | buckets/STABLECO/MA/MA.md |
+| MQ | Short | buckets/STABLECO/MQ/MQ.md |
 | PYPL | Short | buckets/STABLECO/PYPL/PYPL.md |
 | V | Short | buckets/STABLECO/V/V.md |
 | WU | Short | buckets/STABLECO/WU/WU.md |
@@ -604,6 +608,7 @@ Notes:
 | CBRL | buckets/REST/CBRL/CBRL.md | REST |
 | CBT | buckets/CHINAS/CBT/CBT.md | CHINAS |
 | CC | buckets/CHINAS/CC/CC.md | CHINAS |
+| CCJ | buckets/BASELOAD/CCJ/CCJ.md | BASELOAD |
 | CDRE | buckets/LAW/CDRE/CDRE.md | LAW |
 | CE | buckets/CHINAS/CE/CE.md | CHINAS |
 | CEG | buckets/DCSHORTS/CEG/CEG.md | DCSHORTS |
@@ -624,12 +629,12 @@ Notes:
 | CRWV | buckets/DCSHORTS/CRWV/CRWV.md | DCSHORTS |
 | CSX | buckets/TRANSPOR/CSX/CSX.md | TRANSPOR |
 | CTSH | buckets/AIOUT/CTSH/CTSH.md | AIOUT |
+| CW | buckets/BASELOAD/CW/CW.md | BASELOAD |
 | CWAN | buckets/AGENTICS/CWAN/CWAN.md | AGENTICS |
 | CZR | buckets/CASINO/CZR/CZR.md | CASINO |
 | DEO | buckets/MAHA/DEO/DEO.md | MAHA |
 | DGX | buckets/TESTS/DGX/DGX.md | TESTS |
 | DLR | buckets/DCSHORTS/DLR/DLR.md | DCSHORTS |
-| DOCN | buckets/ECOMM/DOCN/DOCN.md | ECOMM |
 | DOCU | buckets/AGENTICS/DOCU/DOCU.md | AGENTICS |
 | DOW | buckets/CHINAS/DOW/DOW.md | CHINAS |
 | DRH | buckets/HOTEL/DRH/DRH.md | HOTEL |
@@ -659,6 +664,7 @@ Notes:
 | FWRG | buckets/REST/FWRG/FWRG.md | REST |
 | G | buckets/AIOUT/G/G.md | AIOUT |
 | GDDY | buckets/AGENTICS/GDDY/GDDY.md | AGENTICS |
+| GEV | buckets/BASELOAD/GEV/GEV.md | BASELOAD |
 | GH | buckets/CANCER/GH/GH.md | CANCER |
 | GIS | buckets/MAHA/GIS/GIS.md | MAHA |
 | GLOB | buckets/AIOUT/GLOB/GLOB.md | AIOUT |
@@ -670,6 +676,7 @@ Notes:
 | HRB | buckets/AIOUT/HRB/HRB.md | AIOUT |
 | HSIC | buckets/HCSUP/HSIC/HSIC.md | HCSUP |
 | HST | buckets/HOTEL/HST/HST.md | HOTEL |
+| HUBB | buckets/BASELOAD/HUBB/HUBB.md | BASELOAD |
 | HUBS | buckets/ECOMM/HUBS/HUBS.md | ECOMM |
 | HUN | buckets/CHINAS/HUN/HUN.md | CHINAS |
 | HUT | buckets/DCSHORTS/HUT/HUT.md | DCSHORTS |
@@ -702,7 +709,7 @@ Notes:
 | MDLZ | buckets/MAHA/MDLZ/MDLZ.md | MAHA |
 | MGA | buckets/CHINAS/MGA/MGA.md | CHINAS |
 | MORN | buckets/DATASRVS/MORN/MORN.md | DATASRVS |
-| MQ | buckets/STABLE/MQ/MQ.md | STABLE |
+| MQ | buckets/STABLECO/MQ/MQ.md | STABLECO |
 | MRCY | buckets/DTECH/MRCY/MRCY.md | DTECH |
 | MSCI | buckets/DATASRVS/MSCI/MSCI.md | DATASRVS |
 | MSI | buckets/LAW/MSI/MSI.md | LAW |
@@ -790,6 +797,7 @@ Notes:
 | WAT | buckets/HCSUP/WAT/WAT.md | HCSUP |
 | WIX | buckets/AGENTICS/WIX/WIX.md | AGENTICS |
 | WK | buckets/AGENTICS/WK/WK.md | AGENTICS |
+| WMB | buckets/BASELOAD/WMB/WMB.md | BASELOAD |
 | WPP | buckets/AIOUT/WPP/WPP.md | AIOUT |
 | WSO | buckets/BUILD/WSO/WSO.md | BUILD |
 | WTKWY | buckets/DATASRVS/WTKWY/WTKWY.md | DATASRVS |

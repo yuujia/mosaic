@@ -59,6 +59,11 @@ Use this skill when the user asks for any of the following or something material
 - If a manifest company is missing from the workbook, note it briefly and exclude it from calculations.
 - Preserve reported values exactly; do not infer missing values.
 - Ignore blank cells and malformed placeholder rows.
+- If the KPI source includes `period_status` or `status`, use that field as the primary actual-vs-forward classifier.
+- When the KPI source includes a `type` field, treat estimate-style rows such as `estimate`, `consensus`, `guidance`, or `forecast` as forward data, not reported historical data.
+- Forward estimate rows may exist for only some KPIs or only some companies; sparse estimate coverage is valid and should not be treated as a data integrity failure.
+- Older sheets may not have a status column yet; in that case, fall back to the legacy logic rather than failing the workflow.
+- Exclude forward estimate rows from the default historical trend table, breadth analysis, and LTM revenue ordering unless the user explicitly asks for forecast analysis.
 
 ## Canonical KPI Set
 Default to these KPIs unless the user asks otherwise:
@@ -118,10 +123,10 @@ Important:
 ## Default Output Structure
 Unless the user explicitly asks for a shorter or different format, produce all of the following in this order:
 
-1. Bucket overall scoreboard
-2. Member scoreboard ordered by LTM revenue
-3. Short summary
-4. Bucket breadth summary
+1. Bucket overall primary table
+2. Short interpretation
+3. Bucket breadth summary
+4. Member scoreboard ordered by LTM revenue when the user asks for it, or when it is needed to explain the bucket read
 5. Brief caveats if data coverage is incomplete
 
 Important:
@@ -134,21 +139,38 @@ Important:
 ## Default Scoreboard Format
 Use quarter-by-quarter trend strings when consecutive quarters are available.
 
-### Bucket Overall
-Show:
+### Bucket Overall (Primary Table)
+When the user asks how a bucket's KPIs are trending, begin with a quarter-by-quarter bucket KPI trend table.
 
-- quarter range
-- `Rev YoY`
-- `GM`
-- `GM YoYΔ`
-- `OPM`
-- `OPM YoYΔ`
+Use a transposed layout:
 
-Also include a concise breadth read when the user asks for trend assessment:
+| Metric | Q1 YYYY | Q2 YYYY | Q3 YYYY | Q4 YYYY |
 
-- revenue accel vs decel count
-- GM expand vs shrink count
-- OPM expand vs shrink count
+Metrics:
+
+- `Revenue YoY Growth`
+- `Gross Margin`
+- `Gross Margin YoYΔ`
+- `Operating Margin`
+- `Operating Margin YoYΔ`
+
+Rules:
+
+- quarter labels should use quarter naming like `Q1 2025`
+- values should be bucket simple averages
+- this table must be the first element of the response unless the user explicitly requests a different format
+- if fewer than 4 quarters are available, use the available consecutive quarters
+
+### Breadth Commentary
+After the bucket KPI trend table, interpret the breadth of company-level signals underlying the bucket averages.
+
+Report:
+
+- revenue acceleration vs deceleration count
+- gross margin expansion vs contraction count
+- operating margin expansion vs contraction count
+
+Explain whether the bucket-level trend is broad-based or driven by a few outliers.
 
 ### Members
 For each company, show:
@@ -164,7 +186,12 @@ For each company, show:
 
 Do not include delta-of-delta columns unless the user explicitly asks for them.
 
-When the user asks for "summary of KPI trends", the default response should still lead with this scoreboard format, then provide summary commentary after it.
+When the user asks for "summary of KPI trends", the default response should be:
+
+1. bucket KPI trend table
+2. short interpretation
+3. breadth commentary
+4. optional member scoreboard
 
 ## Presentation Rules
 - Keep bucket summary concise and interpretation-first.
@@ -172,6 +199,7 @@ When the user asks for "summary of KPI trends", the default response should stil
 - Prefer monospace labels and compact trend strings over narrative tables unless the user explicitly asks for tables.
 - Prefer breadth-first interpretation over outlier-driven interpretation.
 - Avoid subjective labels like `Strong fundamentals`, `Weak macro`, `Mature growth`, or similar unless the user explicitly asks for interpretation labels.
+- Prefer the transposed bucket trend table over inline trend strings when the user asks how a bucket's KPIs are trending.
 - Preserve units exactly:
   - revenue YoY as percent
   - margin levels as percent

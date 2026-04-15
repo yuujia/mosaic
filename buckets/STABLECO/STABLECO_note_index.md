@@ -2,7 +2,7 @@
 
 Bucket Symbol: .STABLECO
 Bucket Folder: STABLECO
-Generated On: 2026-03-15
+Generated On: 2026-04-15
 
 ## Agent Use
 
@@ -46,6 +46,12 @@ Generated On: 2026-03-15
 - company_file: `buckets/STABLECO/MA/MA.md`
 - latest_note_section: `{{latest_fiscal_period}}`
 - available_note_sections: `{{latest_fiscal_period}}`
+- diligence_questions: none populated
+
+### MQ
+- company_file: `buckets/STABLECO/MQ/MQ.md`
+- latest_note_section: `{{latest_calendar_period}}`
+- available_note_sections: `{{latest_calendar_period}}`
 - diligence_questions: none populated
 
 ### PYPL

@@ -2,7 +2,7 @@
 
 Bucket Symbol: .ECOMM
 Bucket Folder: ECOMM
-Generated On: 2026-03-15
+Generated On: 2026-04-15
 
 ## Agent Use
 
@@ -26,12 +26,6 @@ Generated On: 2026-03-15
 
 ### BRZE
 - company_file: `buckets/ECOMM/BRZE/BRZE.md`
-- latest_note_section: `{{latest_fiscal_period}}`
-- available_note_sections: `{{latest_fiscal_period}}`
-- diligence_questions: none populated
-
-### DOCN
-- company_file: `buckets/ECOMM/DOCN/DOCN.md`
 - latest_note_section: `{{latest_fiscal_period}}`
 - available_note_sections: `{{latest_fiscal_period}}`
 - diligence_questions: none populated

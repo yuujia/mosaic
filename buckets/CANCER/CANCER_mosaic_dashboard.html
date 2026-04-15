@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CANCER Mosaic Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4f0e8;
+      --ink: #1f2520;
+      --muted: #667166;
+      --card: rgba(255,255,255,0.78);
+      --line: rgba(31,37,32,0.12);
+      --accent: #215f43;
+      --warn: #9a6700;
+      --risk: #a33a2b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(33,95,67,0.15), transparent 30%),
+        radial-gradient(circle at top right, rgba(163,58,43,0.12), transparent 28%),
+        linear-gradient(180deg, #f7f3ec, var(--bg));
+    }
+    main { max-width: 1200px; margin: 0 auto; padding: 32px 20px 48px; }
+    h1, h2 { margin: 0 0 12px; font-weight: 600; }
+    h3 { margin: 0 0 8px; font-size: 1rem; }
+    p { margin: 0; line-height: 1.5; }
+    .lede { color: var(--muted); max-width: 860px; margin-bottom: 28px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(31,37,32,0.06);
+    }
+    .metric {
+      font-size: 2rem;
+      margin-top: 10px;
+    }
+    .metric-card-spotlight {
+      background: linear-gradient(135deg, rgba(33,95,67,0.16), rgba(255,255,255,0.9));
+      border-color: rgba(33,95,67,0.28);
+      box-shadow: 0 14px 34px rgba(33,95,67,0.12);
+    }
+    .metric-card-negative {
+      background: linear-gradient(135deg, rgba(163,58,43,0.16), rgba(255,255,255,0.9));
+      border-color: rgba(163,58,43,0.28);
+      box-shadow: 0 14px 34px rgba(163,58,43,0.12);
+    }
+    .metric-card-spotlight .metric {
+      color: var(--accent);
+      font-size: 2.25rem;
+    }
+    .metric-card-negative .metric {
+      color: var(--risk);
+      font-size: 2.25rem;
+    }
+    .label { color: var(--muted); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .list { padding-left: 18px; margin: 8px 0 0; }
+    .section { margin-top: 28px; }
+    .stack { display: grid; gap: 12px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.95rem;
+    }
+    th { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    tr:last-child td { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.75);
+    }
+    .green { color: var(--accent); }
+    .yellow { color: var(--warn); }
+    .red { color: var(--risk); }
+    .negative { color: var(--risk); }
+    .positive { color: var(--accent); }
+    .focus-card {
+      min-height: 180px;
+    }
+    .focus-item {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+    .focus-lines {
+      display: grid;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .focus-line {
+      padding-left: 12px;
+      position: relative;
+      line-height: 1.45;
+    }
+    .focus-line::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--accent);
+      position: absolute;
+      left: 0;
+      top: 0.58rem;
+    }
+    .detail-toggle {
+      margin-top: 8px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font: inherit;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    dialog {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      max-width: 560px;
+      width: calc(100vw - 32px);
+      background: #fffdf9;
+      color: var(--ink);
+      box-shadow: 0 20px 60px rgba(31,37,32,0.18);
+    }
+    dialog::backdrop {
+      background: rgba(31,37,32,0.28);
+    }
+    .dialog-close {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font: inherit;
+      cursor: pointer;
+    }
+    .focus-item strong {
+      display: inline-block;
+      min-width: 52px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .focus-group-title {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    @media (max-width: 720px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      td { padding: 10px 12px; }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>CANCER Mosaic Dashboard</h1>
+    <p class="lede">This view centers Mosaic's core questions: is the bucket thesis intact, what is the market translating from recent evidence, and where do company updates point to timing, execution, or structural risk.</p>
+
+    <section class="section">
+      <h2>Bucket Thesis</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="label">Core Thesis</div>
+          <p id="core-thesis"></p>
+        </div>
+        <div class="card">
+          <div class="label">Structural Drivers</div>
+          <ul class="list" id="structural-drivers"></ul>
+        </div>
+        <div class="card">
+          <div class="label">Failure Modes</div>
+          <ul class="list" id="failure-modes"></ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid" id="summary-grid"></div>
+
+    <section class="section">
+      <h2>Bucket Level Snapshot</h2>
+      <div class="grid">
+        <div class="card focus-card">
+          <div class="label">Secular confirmation vs disruptive risk factors</div>
+          <div class="stack" id="focus-secular"></div>
+        </div>
+        <div class="card focus-card">
+          <div class="label">Durability</div>
+          <div class="stack" id="focus-timing"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Latest Market Translation</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Quarter</th>
+            <th>Report Date</th>
+            <th>Rel Perf vs Benchmark</th>
+            <th>Rel Perf vs Bucket</th>
+            <th>Performance Read</th>
+            <th>KPI Assessment</th>
+            <th>Key KPI Drivers</th>
+            <th>Forward Trajectory</th>
+            <th>Bucket Implications</th>
+          </tr>
+        </thead>
+        <tbody id="event-rows"></tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Latest Company Notes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Quarter</th>
+            <th>Event Date</th>
+            <th>Key KPI Drivers</th>
+            <th>Forward Trajectory</th>
+            <th>Risk Factors</th>
+            <th>Diligence Questions</th>
+          </tr>
+        </thead>
+        <tbody id="company-rows"></tbody>
+      </table>
+    </section>
+  </main>
+  <dialog id="detail-dialog">
+    <h3 id="detail-title"></h3>
+    <div id="detail-body" class="focus-lines"></div>
+    <button class="dialog-close" id="detail-close" type="button">Close</button>
+  </dialog>
+  <script>
+    const payload = {"bucket": "CANCER", "thesis": {"core_thesis": "Advances in genomic sequencing and biomarker discovery expand molecular testing for cancer diagnosis, therapy selection and monitoring.", "Structural Drivers (Required Conditions)": ["Molecular biomarker discovery continues to expand clinically actionable testing menus.", "Molecular testing costs continue to decline, broadening accessibility and adoption.", "Guideline inclusion and reimbursement coverage convert new testing into recurring clinical volume."], "Structural Failure Modes": ["Changes to government and commercial payor policies.", "Competition crowding out the pace of scientific breakthroughs."]}, "coverage": {"company_notes": 3, "latest_note_quarter": "2025 Q4", "latest_event_quarter": "2025 Q4", "latest_events": 2, "matched_events": 2}, "mosaic_focus": {"secular_confirmation": [{"ticker": "GH", "groups": {"Confirms secular thesis": ["molecular testing in oncology a rapidly growing market"], "Drivers and risk factors": ["mostly company-specific regulatory milestones", "Government policy presenting minimal headwind to bucket"], "Other": []}}, {"ticker": "VCYT", "groups": {"Confirms secular thesis": ["molecular testing in oncology a rapidly growing market"], "Drivers and risk factors": ["mostly related to competition amongst peers instead of overall oncology/MolDx growth.", "Government policy presenting minimal headwind to bucket"], "Other": []}}], "durability": [{"ticker": "GH", "text": "Revenue deceleration: FY26 guidance of $1.25B - $1.28B (28.5% yoy v 39.4% yoy last year)", "detail": "Revenue deceleration: FY26 guidance of $1.25B - $1.28B (28.5% yoy v 39.4% yoy last year) | Oncology segment deceleration: FY26 guidance of 26% revenue growth and 30% volume growth | Growing Screening segment contribution: FY26 guidance of $162M-$174M (110% yoy), 210k-225k tests (150% yoy), implies ASPs going from $850 to $775 | Margin expansion: FY26 guidance free cash flow burn of $185M - $195M (vs $233M last Year)"}, {"ticker": "VCYT", "text": "Revenue deceleration: FY26 guidance of $570M - $582M (12% yoy v 16% yoy last year)", "detail": "Revenue deceleration: FY26 guidance of $570M - $582M (12% yoy v 16% yoy last year)"}]}, "market_translation": {"average_relative_return": -0.12385809523796022, "average_bucket_raw_return": -0.15278486756101184, "event_cards": [{"ticker": "GH", "report_date": "2026-02-19", "calendar_quarter": "2025 Q4", "relative_return_vs_benchmark": -0.13010453702395064, "relative_return_vs_bucket": 0.011946431385788076, "raw_return": -0.14083843617522376, "kpi_assessment": "Revenues continued accelerating and margins continued expanding", "key_kpi_drivers": "Screening revenue contribution: $24M or ~10% of sales | Oncology revenues decelerated: 30% yoy. Reveal growing ~100% and G360 growing ~25% | Oncology price mix lower: Reveal at ~$700 while G360 at ~$3000", "forward_trajectory": "Revenue deceleration: FY26 guidance of $1.25B - $1.28B (28.5% yoy v 39.4% yoy last year) | Oncology segment deceleration: FY26 guidance of 26% revenue growth and 30% volume growth | Growing Screening segment contribution: FY26 guidance of $162M-$174M (110% yoy), 210k-225k tests (150% yoy), implies ASPs going from $850 to $775 | Margin expansion: FY26 guidance free cash flow burn of $185M - $195M (vs $233M last Year)", "execution_risks": "Screening ASP declining given higher commercial mix vs MA. | G360 Liquid awaiting FDA approval | Reveal awaiting MolDX inclusion", "structural_risks": "", "bucket_implications": "Confirms secular thesis: molecular testing in oncology a rapidly growing market | Drivers and risk factors: mostly company-specific regulatory milestones | Drivers and risk factors: Government policy presenting minimal headwind to bucket", "performance_read": "Leading bucket even as trajectory softens; market may see the slowdown as better contained."}, {"ticker": "VCYT", "report_date": "2026-02-25", "calendar_quarter": "2025 Q4", "relative_return_vs_benchmark": -0.1176116534519698, "relative_return_vs_bucket": -0.011946431385788076, "raw_return": -0.16473129894679991, "kpi_assessment": "Revenues continued accelerating, and margin expansion accelerates further.", "key_kpi_drivers": "Revenue per tests grew: $2988 vs $2868 last year and $2923 last quarter | Test volumes decelerated: 16% yoy in Q4 vs 18% yoy in Q3. Decipher grew 21% (65% of tests), Afirma grew 12% (35% of tests)", "forward_trajectory": "Revenue deceleration: FY26 guidance of $570M - $582M (12% yoy v 16% yoy last year)", "execution_risks": "Prosigna LDT in mid 2026, TrueMRD in 1H26 | Competition or niche market saturation. Afirma decelerating to mid single digits from 11%", "structural_risks": "TrueMRD contribution faces competitive headwinds in larger MRD market", "bucket_implications": "Confirms secular thesis: molecular testing in oncology a rapidly growing market | Drivers and risk factors: mostly related to competition amongst peers instead of overall oncology/MolDx growth. | Drivers and risk factors: Government policy presenting minimal headwind to bucket", "performance_read": "Lagging bucket despite solid current fundamentals; market appears focused on durability."}]}, "company_notes": [{"ticker": "ADPT", "calendar_quarter": "2025 Q4", "event_date": "2025-02-05", "thematic_color": "", "diligence_questions": "", "major_changes": "Issued 2026 guidance for MRD business: $255-$265M | Issued 2026 guidance for costs ($350-$360M) | Other 2026 color: expect clinical volume growth of >30%, ASP of $1400, MRD GM >70%", "kpi_assessment": "", "key_kpi_drivers": "", "forward_trajectory": "", "forward_trajectory_first": "", "forward_trajectory_compact": "", "upside_drivers": "", "risk_factors": "", "macro_risks": "", "execution_risks": "", "structural_risks": "", "bucket_implications": "", "bucket_implications_compact": "", "bucket_implication_groups": {"Confirms secular thesis": [], "Drivers and risk factors": [], "Other": []}, "path": "buckets/CANCER/ADPT/ADPT.md"}, {"ticker": "GH", "calendar_quarter": "2025 Q4", "event_date": "2026-02-19", "thematic_color": "Guardant360 is therapy selection for advanced solid tumors (stage 3 and 4). Tumor agnostic but often for non-small cell lung cancer, CRC, prostate | Guardant Reveal: MRD product that is now expanding into therapy monitoring. 50% of volumes now is for CRC | Guardant Shield: CRC Screening", "diligence_questions": "AstraZeneca Serena-6 trial: why is G360 Liquid being used for monitoring instead of Reveal? (for breast cancer ESR1 mutation) | How quickly do volumes respond when ACS guidelines change? Is it still dependent on sales channel? | What is pricing upside potential for G360 and Reveal?", "major_changes": "Issued 2026 guidance above Street", "kpi_assessment": "Revenues continued accelerating and margins continued expanding", "key_kpi_drivers": "Screening revenue contribution: $24M or ~10% of sales | Oncology revenues decelerated: 30% yoy. Reveal growing ~100% and G360 growing ~25% | Oncology price mix lower: Reveal at ~$700 while G360 at ~$3000", "forward_trajectory": "Revenue deceleration: FY26 guidance of $1.25B - $1.28B (28.5% yoy v 39.4% yoy last year) | Oncology segment deceleration: FY26 guidance of 26% revenue growth and 30% volume growth | Growing Screening segment contribution: FY26 guidance of $162M-$174M (110% yoy), 210k-225k tests (150% yoy), implies ASPs going from $850 to $775 | Margin expansion: FY26 guidance free cash flow burn of $185M - $195M (vs $233M last Year)", "forward_trajectory_first": "Revenue deceleration: FY26 guidance of $1.25B - $1.28B (28.5% yoy v 39.4% yoy last year)", "forward_trajectory_compact": "Revenue deceleration: FY26 guidance of $1.25B - $1.28B (28.5% yoy v 39.4% yoy last year) | Oncology segment deceleration: FY26 guidance of 26% revenue growth and 30% volume growth | Growing Screening segment contribution: FY26 guidance of $162M-$174M (110% yoy), 210k-225k tests (150% yoy), implies ASPs going from $850 to $775 | Margin expansion: FY26 guidance free cash flow burn of $185M - $195M (vs $233M last Year)", "upside_drivers": "Screening: ACS guideline inclusion, Quest partnership, sales productivity in PCP channel | Oncology: G360 Liquid submitted for FDA approval, which would receive ADLT pricing and drive volumes | Oncology: Reveal submitted to MolDX for chemomonitoring", "risk_factors": "Execution: Screening ASP declining given higher commercial mix vs MA. | Execution: G360 Liquid awaiting FDA approval | Execution: Reveal awaiting MolDX inclusion", "macro_risks": "", "execution_risks": "Screening ASP declining given higher commercial mix vs MA. | G360 Liquid awaiting FDA approval | Reveal awaiting MolDX inclusion", "structural_risks": "", "bucket_implications": "Confirms secular thesis: molecular testing in oncology a rapidly growing market | Drivers and risk factors: mostly company-specific regulatory milestones | Drivers and risk factors: Government policy presenting minimal headwind to bucket", "bucket_implications_compact": "Confirms secular thesis: molecular testing in oncology a rapidly growing market | Drivers and risk factors: mostly company-specific regulatory milestones | Drivers and risk factors: Government policy presenting minimal headwind to bucket", "bucket_implication_groups": {"Confirms secular thesis": ["molecular testing in oncology a rapidly growing market"], "Drivers and risk factors": ["mostly company-specific regulatory milestones", "Government policy presenting minimal headwind to bucket"], "Other": []}, "path": "buckets/CANCER/GH/GH.md"}, {"ticker": "VCYT", "calendar_quarter": "2025 Q4", "event_date": "2026-02-25", "thematic_color": "Prosigna: breast cancer during therapy phase, to assess likelihood of distant recurrence. Helps decide if patients still need chemotherapy or can switch to hormone therapy | Decipher: prostate and bladder cancer, tumor prognostic test | Afirma: thyroid cancer, therapy selection | TrueMRD: MRD for bladder cancer | Percepta: nasal swab for lung cancer screening for former smokers with nodules | Threat from Digital Pathology: Decipher currently more accurate vs multimodal AI scores. AI creates a lot of false negatives. Decipher is backed by 200,000 transcriptomes.", "diligence_questions": "MRD competition: is there a competitive advantage having a foothold in prognostic and diagnostic part of the care continuum? | Is there a margin or product revenue headwind from launching Prosigna LDT?", "major_changes": "Issued 2026 guidance above Street", "kpi_assessment": "Revenues continued accelerating, and margin expansion accelerates further.", "key_kpi_drivers": "Revenue per tests grew: $2988 vs $2868 last year and $2923 last quarter | Test volumes decelerated: 16% yoy in Q4 vs 18% yoy in Q3. Decipher grew 21% (65% of tests), Afirma grew 12% (35% of tests)", "forward_trajectory": "Revenue deceleration: FY26 guidance of $570M - $582M (12% yoy v 16% yoy last year)", "forward_trajectory_first": "Revenue deceleration: FY26 guidance of $570M - $582M (12% yoy v 16% yoy last year)", "forward_trajectory_compact": "Revenue deceleration: FY26 guidance of $570M - $582M (12% yoy v 16% yoy last year)", "upside_drivers": "Guidance does not include TrueMRD or Prosigna LDT launch contribution", "risk_factors": "Execution: Prosigna LDT in mid 2026, TrueMRD in 1H26 | Execution: Competition or niche market saturation. Afirma decelerating to mid single digits from 11% | Structural: TrueMRD contribution faces competitive headwinds in larger MRD market", "macro_risks": "", "execution_risks": "Prosigna LDT in mid 2026, TrueMRD in 1H26 | Competition or niche market saturation. Afirma decelerating to mid single digits from 11%", "structural_risks": "TrueMRD contribution faces competitive headwinds in larger MRD market", "bucket_implications": "Confirms secular thesis: molecular testing in oncology a rapidly growing market | Drivers and risk factors: mostly related to competition amongst peers instead of overall oncology/MolDx growth. | Drivers and risk factors: Government policy presenting minimal headwind to bucket", "bucket_implications_compact": "Confirms secular thesis: molecular testing in oncology a rapidly growing market | Drivers and risk factors: mostly related to competition amongst peers instead of overall oncology/MolDx growth. | Drivers and risk factors: Government policy presenting minimal headwind to bucket", "bucket_implication_groups": {"Confirms secular thesis": ["molecular testing in oncology a rapidly growing market"], "Drivers and risk factors": ["mostly related to competition amongst peers instead of overall oncology/MolDx growth.", "Government policy presenting minimal headwind to bucket"], "Other": []}, "path": "buckets/CANCER/VCYT/VCYT.md"}]};
+
+    const fmtPct = value => {
+      if (value === null || value === undefined || Number.isNaN(value)) return 'na';
+      return `${(value * 100).toFixed(1)}%`;
+    };
+
+    const summaryGrid = document.getElementById('summary-grid');
+    const relPerfClass = (payload.market_translation.average_relative_return ?? 0) < 0
+      ? 'metric-card-negative'
+      : 'metric-card-spotlight';
+    const summaryCards = [
+      ['Latest event quarter', payload.coverage.latest_event_quarter || 'Missing', ''],
+      ['Updated for latest quarter', `${payload.coverage.matched_events} / ${payload.coverage.latest_events}`, ''],
+      ['Average bucket return', fmtPct(payload.market_translation.average_bucket_raw_return), ''],
+      ['Average rel perf', fmtPct(payload.market_translation.average_relative_return), relPerfClass],
+    ];
+    summaryCards.forEach(([label, value, className]) => {
+      const card = document.createElement('div');
+      card.className = `card ${className || ''}`.trim();
+      card.innerHTML = `<div class="label">${label}</div><div class="metric">${value}</div>`;
+      summaryGrid.appendChild(card);
+    });
+
+    document.getElementById('core-thesis').textContent = payload.thesis.core_thesis || 'Missing';
+    const fillList = (id, items) => {
+      const target = document.getElementById(id);
+      (items || []).forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        target.appendChild(li);
+      });
+    };
+    fillList('structural-drivers', payload.thesis['Structural Drivers (Required Conditions)']);
+    fillList('failure-modes', payload.thesis['Structural Failure Modes']);
+
+    const renderFocus = (id, items, mode = 'lines') => {
+      const root = document.getElementById(id);
+      if (!items.length) {
+        const p = document.createElement('p');
+        p.textContent = 'Missing';
+        root.appendChild(p);
+        return;
+      }
+      const splitText = text => text.split(' | ').map(part => part.trim()).filter(Boolean);
+      if (mode === 'grouped') {
+        const grouped = [
+          ['Confirms Secular Thesis', []],
+          ['Drivers and Risk Factors', []],
+          ['Other', []],
+        ];
+        items.forEach(item => {
+          (item.groups?.['Confirms secular thesis'] || []).forEach(entry => grouped[0][1].push([item.ticker, entry]));
+          (item.groups?.['Drivers and risk factors'] || []).forEach(entry => grouped[1][1].push([item.ticker, entry]));
+          (item.groups?.Other || []).forEach(entry => grouped[2][1].push([item.ticker, entry]));
+        });
+        grouped.forEach(([title, entries]) => {
+          if (!entries.length) return;
+          const section = document.createElement('div');
+          section.className = 'focus-item';
+          const groupTitle = document.createElement('div');
+          groupTitle.className = 'focus-group-title';
+          groupTitle.textContent = `${title}:`;
+          section.appendChild(groupTitle);
+          const body = document.createElement('div');
+          body.className = 'focus-lines';
+          entries.forEach(([ticker, entry]) => {
+            const line = document.createElement('div');
+            line.className = 'focus-line';
+            line.innerHTML = `<strong>${ticker}</strong><span>${entry}</span>`;
+            body.appendChild(line);
+          });
+          section.appendChild(body);
+          root.appendChild(section);
+        });
+        return;
+      }
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'focus-item';
+        const body = document.createElement('div');
+        body.className = 'focus-lines';
+        if (mode === 'single') {
+          const line = document.createElement('div');
+          line.className = 'focus-line';
+          line.textContent = item.text || 'Missing';
+          body.appendChild(line);
+        } else {
+          const lines = splitText(item.text || '');
+          lines.forEach(entry => {
+            const line = document.createElement('div');
+            line.className = 'focus-line';
+            line.textContent = entry;
+            body.appendChild(line);
+          });
+        }
+        div.innerHTML = `<strong>${item.ticker}</strong>`;
+        div.appendChild(body);
+        if (item.detail && item.detail !== item.text) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'detail-toggle';
+          button.textContent = 'More';
+          button.addEventListener('click', () => openDetail(item.ticker, item.detail));
+          div.appendChild(button);
+        }
+        root.appendChild(div);
+      });
+    };
+    const dialog = document.getElementById('detail-dialog');
+    const detailTitle = document.getElementById('detail-title');
+    const detailBody = document.getElementById('detail-body');
+    const openDetail = (ticker, text) => {
+      detailTitle.textContent = `${ticker} durability detail`;
+      detailBody.innerHTML = '';
+      text.split(' | ').map(part => part.trim()).filter(Boolean).forEach(entry => {
+        const line = document.createElement('div');
+        line.className = 'focus-line';
+        line.textContent = entry;
+        detailBody.appendChild(line);
+      });
+      dialog.showModal();
+    };
+    document.getElementById('detail-close').addEventListener('click', () => dialog.close());
+    renderFocus('focus-secular', payload.mosaic_focus.secular_confirmation, 'grouped');
+    renderFocus('focus-timing', payload.mosaic_focus.durability, 'single');
+
+    const eventRows = document.getElementById('event-rows');
+    payload.market_translation.event_cards.forEach(row => {
+      const tr = document.createElement('tr');
+      const relBenchClass = row.relative_return_vs_benchmark < 0 ? 'negative' : 'positive';
+      const relBucketClass = row.relative_return_vs_bucket < 0 ? 'negative' : 'positive';
+      tr.innerHTML = `
+        <td data-label="Ticker">${row.ticker}</td>
+        <td data-label="Quarter">${row.calendar_quarter || 'Missing'}</td>
+        <td data-label="Report Date">${row.report_date}</td>
+        <td data-label="Rel Perf vs Benchmark" class="${relBenchClass}">${fmtPct(row.relative_return_vs_benchmark)}</td>
+        <td data-label="Rel Perf vs Bucket" class="${relBucketClass}">${fmtPct(row.relative_return_vs_bucket)}</td>
+        <td data-label="Performance Read">${row.performance_read || 'Missing'}</td>
+        <td data-label="KPI Assessment">${row.kpi_assessment || 'Missing'}</td>
+        <td data-label="Key KPI Drivers">${row.key_kpi_drivers || 'Missing'}</td>
+        <td data-label="Forward Trajectory">${row.forward_trajectory || 'Missing'}</td>
+        <td data-label="Bucket Implications">${row.bucket_implications || 'Missing'}</td>
+      `;
+      eventRows.appendChild(tr);
+    });
+
+    const companyRows = document.getElementById('company-rows');
+    payload.company_notes.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td data-label="Ticker">${row.ticker}</td>
+        <td data-label="Quarter">${row.calendar_quarter}</td>
+        <td data-label="Event Date">${row.event_date || 'Missing'}</td>
+        <td data-label="Key KPI Drivers">${row.key_kpi_drivers || 'Missing'}</td>
+        <td data-label="Forward Trajectory">${row.forward_trajectory || 'Missing'}</td>
+        <td data-label="Risk Factors">${row.risk_factors || 'Missing'}</td>
+        <td data-label="Diligence Questions">${row.diligence_questions || 'Missing'}</td>
+      `;
+      companyRows.appendChild(tr);
+    });
+  </script>
+</body>
+</html>

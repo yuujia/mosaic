@@ -39,8 +39,8 @@ fiscal_period: 2025 Q4
 - 
 
 ### Thesis Progress
-signal: {{signal}}   # Green / Yellow / Red
-rationale: 
+signal: Green   # Green / Yellow / Red
+rationale: revenue deceleration despite launch of agentic products
 
 ### Fail Point Check
 

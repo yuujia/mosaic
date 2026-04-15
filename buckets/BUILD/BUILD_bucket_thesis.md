@@ -3,15 +3,13 @@
 Bucket Symbol: .BUILD  
 Bucket Folder: BUILD  
 Side: Long / Short  
-Last Updated: 2026-03-03  
+Last Updated: 2026-03-26  
 
 ---
 
 ## Core Thesis
 
-{2–4 sentences describing the structural change.  
-What is changing? Why does it persist?  
-Who benefits and through what mechanism?}
+Domestic investment activity benefit building parts distributors and services.
 
 ---
 
@@ -19,7 +17,7 @@ Who benefits and through what mechanism?}
 
 These must remain true for the thesis to work:
 
-- 
+- Spending on domestic infrastructure encouraged by government policy
 - 
 - 
 
@@ -33,16 +31,16 @@ Evidence that structural drivers of the investment thesis are playing out at the
 
 The investment thesis is playing out at the company level when:
 
-- 
-- 
+- Accelerating sales
+- Margin expansion
 - 
 
 ### Off Track Definition
 
 The investment thesis is deteriorating at the company level when:
 
-- 
-- 
+- Decelerating sales
+- Margin shrinkage
 - 
 
 ---
@@ -51,7 +49,7 @@ The investment thesis is deteriorating at the company level when:
 
 Macro, industry, or structural forces that can overwhelm the thesis:
 
-- 
+- Macro: economic slowdown can outweigh any secular growth
 - 
 - 
 - 

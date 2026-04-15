@@ -26,8 +26,10 @@ Repo-local skills:
 
 - Bucket KPI summarization skill: `agents/skills/bucket-kpi-summary.md`
 - Bucket thesis progress skill: `agents/skills/bucket-thesis-progress.md`
+- Portfolio note analysis skill: `agents/skills/portfolio-note-analysis.md`
 
 Skill trigger rule:
 
 - When the user asks to "summarize KPIs of bucket [X]" or makes a closely related request about bucket-level KPI assessment, scoreboard generation, revenue acceleration/deceleration, margin expansion/shrinking, or earnings implication for a Mosaic bucket, load and follow `agents/skills/bucket-kpi-summary.md` before answering.
 - When the user asks for the "thesis progress", "thesis status", "how the thesis is going", whether the thesis is "on track", or a closely related request for a Mosaic bucket, load and follow `agents/skills/bucket-thesis-progress.md` before answering.
+- When the user asks for a portfolio-level picture, portfolio upside drivers, portfolio downside risks, equal-weighted portfolio synthesis from company notes, or what percent of active positions are still blank, load and follow `agents/skills/portfolio-note-analysis.md` before answering.

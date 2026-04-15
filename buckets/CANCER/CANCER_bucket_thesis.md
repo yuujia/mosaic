@@ -2,7 +2,7 @@
 
 Bucket Symbol: .CANCER  
 Bucket Folder: CANCER  
-Side: Long / Short  
+Side: Long  
 Last Updated: 2026-03-03  
 
 ---
@@ -51,6 +51,6 @@ The investment thesis is deteriorating at the company level when:
 Macro, industry, or structural forces that can overwhelm the thesis:
 
 - Changes to government and commercial payor policies.
-- Competition crowding out the pace of scientific breakthroughs.
+- Competition crowding out a market defined by a relatively fixed patient population
 - 
 - 

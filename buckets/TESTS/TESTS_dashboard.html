@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TESTS Bucket Dashboard</title>
+  <style>
+    :root {
+      --bg: #f3efe5;
+      --paper: #fffaf0;
+      --ink: #18211f;
+      --muted: #67736f;
+      --line: #d7cdb7;
+      --accent: #8c3f2b;
+      --accent-soft: #e8c1a4;
+      --green: #2f7d4a;
+      --yellow: #b98511;
+      --red: #9f3025;
+      --shadow: 0 18px 50px rgba(24, 33, 31, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(140,63,43,0.18), transparent 30%),
+        linear-gradient(180deg, #f8f4ea 0%, var(--bg) 100%);
+    }
+    .page {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 28px auto 40px;
+    }
+    .hero, .panel {
+      background: var(--paper);
+      border: 1px solid rgba(140, 63, 43, 0.14);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      padding: 28px 30px 24px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(140,63,43,0.16), transparent 70%);
+    }
+    h1, h2, h3 { margin: 0; font-weight: 600; }
+    h1 { font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -0.03em; }
+    h2 { font-size: 1.25rem; margin-bottom: 14px; }
+    h3 { font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .subhead { margin-top: 8px; color: var(--muted); max-width: 760px; line-height: 1.45; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      margin-top: 22px;
+    }
+    .summary-card {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .progress-pill {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .progress-Yellow-Green { background: rgba(47,125,74,0.14); border-color: rgba(47,125,74,0.28); color: var(--green); }
+    .progress-Yellow { background: rgba(185,133,17,0.15); border-color: rgba(185,133,17,0.3); color: var(--yellow); }
+    .progress-Yellow-Red, .progress-Red { background: rgba(159,48,37,0.12); border-color: rgba(159,48,37,0.25); color: var(--red); }
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .stat {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .stat.green { background: rgba(47,125,74,0.10); border-color: rgba(47,125,74,0.25); }
+    .stat.yellow { background: rgba(185,133,17,0.12); border-color: rgba(185,133,17,0.26); }
+    .stat.red { background: rgba(159,48,37,0.10); border-color: rgba(159,48,37,0.22); }
+    .stat-value { font-size: 1.4rem; font-weight: 700; }
+    .summary-link {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 16px;
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 22px;
+    }
+    .panel {
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .metric-label { font-weight: 600; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    select {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font: inherit;
+      color: var(--ink);
+    }
+    .bars {
+      display: grid;
+      gap: 12px;
+    }
+    .signal-groups {
+      display: grid;
+      gap: 14px;
+    }
+    .signal-group {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      padding: 14px;
+    }
+    .signal-group.green { border-color: rgba(47,125,74,0.24); background: rgba(47,125,74,0.06); }
+    .signal-group.yellow { border-color: rgba(185,133,17,0.26); background: rgba(185,133,17,0.08); }
+    .signal-group.red { border-color: rgba(159,48,37,0.24); background: rgba(159,48,37,0.06); }
+    .signal-group.missing { border-color: rgba(103,115,111,0.20); background: rgba(103,115,111,0.05); }
+    .signal-group-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .signal-company-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .signal-company {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fffdf8;
+      font-size: 0.9rem;
+    }
+    .signal-company small {
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 44px;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.93rem;
+    }
+    .bar-track {
+      height: 18px;
+      border-radius: 999px;
+      background: #efe6d2;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-zero {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 2px;
+      background: rgba(24, 33, 31, 0.28);
+      transform: translateX(-1px);
+    }
+    .bar-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent) 0%, #c46f4d 100%);
+    }
+    .bar-fill.negative {
+      background: linear-gradient(90deg, #c98a5b 0%, var(--red) 100%);
+    }
+    .signal-trend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+      gap: 10px;
+    }
+    .signal-quarter {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+    }
+    .stack {
+      height: 82px;
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .stack-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 4px;
+      min-width: 0;
+    }
+    .signal-counts {
+      display: grid;
+      gap: 5px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+    .signal-chip {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fffaf6;
+    }
+    .signal-chip.green { color: var(--green); border-color: rgba(47,125,74,0.22); background: rgba(47,125,74,0.08); }
+    .signal-chip.yellow { color: var(--yellow); border-color: rgba(185,133,17,0.24); background: rgba(185,133,17,0.10); }
+    .signal-chip.red { color: var(--red); border-color: rgba(159,48,37,0.22); background: rgba(159,48,37,0.08); }
+    .seg { border-radius: 8px 8px 2px 2px; }
+    .seg.green { background: rgba(47,125,74,0.8); }
+    .seg.yellow { background: rgba(185,133,17,0.8); }
+    .seg.red { background: rgba(159,48,37,0.82); }
+    .bullet-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .bullet-list li {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      line-height: 1.4;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .details-grid .panel {
+      margin-bottom: 0;
+    }
+    .ticker {
+      display: inline-block;
+      min-width: 52px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      padding: 10px 14px;
+    }
+    details + details { margin-top: 10px; }
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .member-lines {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+      font-size: 0.94rem;
+    }
+    .member-lines code { font-family: "SFMono-Regular", Consolas, monospace; background: #f4ede0; padding: 2px 6px; border-radius: 6px; }
+    .muted { color: var(--muted); }
+    @media (max-width: 900px) {
+      .hero-grid, .layout { grid-template-columns: 1fr; }
+      .details-grid { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <h1>TESTS Bucket Dashboard</h1>
+      <p class="subhead">Connector-safe bucket dashboard built from the KPI CSV export, company notes, and thesis progress signals. This view leads with the bucket KPI trend table, then shows breadth and note evidence.</p>
+      <div class="hero-grid">
+        <div class="summary-card">
+          <h3>Thesis Progress - Current Status</h3>
+          <div id="progress-pill" class="progress-pill"></div>
+          <div class="summary-stats">
+            <div class="stat green"><div class="muted">Green</div><div class="stat-value" id="green-count"></div></div>
+            <div class="stat yellow"><div class="muted">Yellow</div><div class="stat-value" id="yellow-count"></div></div>
+            <div class="stat red"><div class="muted">Red</div><div class="stat-value" id="red-count"></div></div>
+          </div>
+          <button type="button" id="thesis-details-toggle" class="summary-link" aria-expanded="false">Thesis Details</button>
+        </div>
+        <div class="summary-card">
+          <h3>Breadth Snapshot</h3>
+          <div class="member-lines" id="breadth-snapshot"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="thesis-details-panel" class="panel" hidden>
+      <h2>Thesis Details</h2>
+      <div class="details-grid">
+        <section class="panel">
+          <h2>Thesis Confirming</h2>
+          <ul class="bullet-list" id="confirming-list"></ul>
+        </section>
+        <section class="panel">
+          <h2>Thesis Disconfirming</h2>
+          <ul class="bullet-list" id="disconfirming-list"></ul>
+        </section>
+        <section class="panel">
+          <h2>Thematic Color</h2>
+          <ul class="bullet-list" id="thematic-list"></ul>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Thesis Progress Trend</h2>
+      <div class="signal-trend" id="signal-trend"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Bucket KPI Trend</h2>
+      <table id="bucket-table"></table>
+    </section>
+
+    <section class="panel">
+      <h2>Interpretation</h2>
+      <div class="member-lines" id="interpretation"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Forward Estimates</h2>
+      <div class="member-lines" id="forecast-summary"></div>
+      <div id="forecast-scoreboard"></div>
+    </section>
+
+    <section class="panel">
+      <div class="controls">
+        <div>
+          <h2 style="margin-bottom:6px">Company Distribution</h2>
+          <div class="muted" id="distribution-subhead">Latest-quarter company distribution for the selected KPI lens.</div>
+        </div>
+        <select id="distribution-select">
+          <option>Thesis Progress</option>
+          <option>Revenue YoY Growth</option>
+          <option>Revenue YoYΔ</option>
+          <option>Gross Margin</option>
+          <option>Gross Margin YoYΔ</option>
+          <option>Operating Margin</option>
+          <option>Operating Margin YoYΔ</option>
+        </select>
+      </div>
+      <div class="bars" id="distribution-bars"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Member Scoreboard</h2>
+      <div id="member-scoreboard"></div>
+    </section>
+  </div>
+
+  <script>
+    const payload = {"bucket": "TESTS", "kpis": {"quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "latestDistributionQuarter": "Q4 2025", "bucketTable": [{"metric": "Revenue YoY Growth", "values": [0.041765671295416404, 0.07011450325551785, 0.04930631964050893, 0.04257883246590778]}, {"metric": "Revenue YoY\u0394", "values": [-223.58156154432749, 283.4883196010152, -208.0818361500901, -67.27487174601097]}, {"metric": "Gross Margin", "values": [50.225699999999996, 49.32695, 49.41583333333333, 48.32148333333333]}, {"metric": "Gross Margin YoY\u0394", "values": [27.86833333333331, 814.46, 10.834999999999935, -111.8549999999998]}, {"metric": "Operating Margin", "values": [12.301266666666667, 10.8395, 14.572916666666666, 9.2494]}, {"metric": "Operating Margin YoY\u0394", "values": [-97.81666666666668, 730.6316666666667, 100.16, -477.08]}], "breadth": {"revenue": {"accelerating": 3, "decelerating": 3}, "grossMargin": {"expanding": 1, "contracting": 5}, "operatingMargin": {"expanding": 2, "contracting": 4}}, "distribution": {"Revenue YoY Growth": [{"ticker": "DGX", "value": 7.05837466615795, "display": "7.1%"}, {"ticker": "RVTY", "value": 5.82197976918226, "display": "5.8%"}, {"ticker": "LH", "value": 5.59860635549949, "display": "5.6%"}, {"ticker": "BIO", "value": 3.85018726591762, "display": "3.9%"}, {"ticker": "QGEN", "value": 3.6066630596198697, "display": "3.6%"}, {"ticker": "TECH", "value": -0.38851163683252304, "display": "-0.4%"}], "Revenue YoY\u0394": [{"ticker": "RVTY", "value": 367.438545479024, "display": "367 bps"}, {"ticker": "BIO", "value": 334.674660065564, "display": "335 bps"}, {"ticker": "TECH", "value": 61.4397248048881, "display": "61 bps"}, {"ticker": "QGEN", "value": -256.8635745161, "display": "-257 bps"}, {"ticker": "LH", "value": -297.84807864871, "display": "-298 bps"}, {"ticker": "DGX", "value": -612.490507660732, "display": "-612 bps"}], "Gross Margin": [{"ticker": "TECH", "value": 64.6475, "display": "64.6%"}, {"ticker": "QGEN", "value": 60.1882, "display": "60.2%"}, {"ticker": "RVTY", "value": 54.6151, "display": "54.6%"}, {"ticker": "BIO", "value": 49.798, "display": "49.8%"}, {"ticker": "DGX", "value": 32.4305, "display": "32.4%"}, {"ticker": "LH", "value": 28.2496, "display": "28.2%"}], "Gross Margin YoY\u0394": [{"ticker": "LH", "value": 132.88, "display": "133 bps"}, {"ticker": "DGX", "value": -30.5099999999996, "display": "-31 bps"}, {"ticker": "TECH", "value": -62.7200000000002, "display": "-63 bps"}, {"ticker": "BIO", "value": -143.8, "display": "-144 bps"}, {"ticker": "RVTY", "value": -191.16, "display": "-191 bps"}, {"ticker": "QGEN", "value": -375.819999999999, "display": "-376 bps"}], "Operating Margin": [{"ticker": "TECH", "value": 18.4066, "display": "18.4%"}, {"ticker": "QGEN", "value": 18.4003, "display": "18.4%"}, {"ticker": "RVTY", "value": 14.4742, "display": "14.5%"}, {"ticker": "DGX", "value": 13.7562, "display": "13.8%"}, {"ticker": "LH", "value": 7.6114, "display": "7.6%"}, {"ticker": "BIO", "value": -17.1523, "display": "-17.2%"}], "Operating Margin YoY\u0394": [{"ticker": "TECH", "value": 244.23, "display": "244 bps"}, {"ticker": "LH", "value": 110.87, "display": "111 bps"}, {"ticker": "DGX", "value": -1.72000000000008, "display": "-2 bps"}, {"ticker": "RVTY", "value": -180.69, "display": "-181 bps"}, {"ticker": "QGEN", "value": -445.03, "display": "-445 bps"}, {"ticker": "BIO", "value": -2590.14, "display": "-2590 bps"}]}, "estimateCoverage": [], "forecastRows": [], "memberRows": [{"ticker": "LH", "ltmRevenue": 13951.7, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["5.3%", "9.5%", "8.6%", "5.6%"], "revenueYoyDelta": ["-446 bps", "421 bps", "-94 bps", "-298 bps"], "grossMargin": ["28.3%", "29.7%", "28.8%", "28.2%"], "grossMarginYoyDelta": ["9 bps", "90 bps", "121 bps", "133 bps"], "operatingMargin": ["9.7%", "11.2%", "11.1%", "7.6%"], "operatingMarginYoyDelta": ["-37 bps", "203 bps", "339 bps", "111 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "DGX", "ltmRevenue": 11035.0, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["12.1%", "15.2%", "13.2%", "7.1%"], "revenueYoyDelta": ["-247 bps", "310 bps", "-200 bps", "-612 bps"], "grossMargin": ["32.5%", "34.2%", "33.7%", "32.4%"], "grossMarginYoyDelta": ["-5 bps", "61 bps", "110 bps", "-31 bps"], "operatingMargin": ["13.0%", "15.9%", "13.7%", "13.8%"], "operatingMarginYoyDelta": ["37 bps", "105 bps", "44 bps", "-2 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "RVTY", "ltmRevenue": 2856.1, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["2.3%", "4.1%", "2.1%", "5.8%"], "revenueYoyDelta": ["-259 bps", "185 bps", "-196 bps", "367 bps"], "grossMargin": ["56.5%", "54.5%", "53.6%", "54.6%"], "grossMarginYoyDelta": ["186 bps", "-123 bps", "-266 bps", "-191 bps"], "operatingMargin": ["10.9%", "12.6%", "11.7%", "14.5%"], "operatingMarginYoyDelta": ["408 bps", "21 bps", "-263 bps", "-181 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "BIO", "ltmRevenue": 2583.2, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["-4.2%", "2.1%", "0.5%", "3.9%"], "revenueYoyDelta": ["-215 bps", "622 bps", "-155 bps", "335 bps"], "grossMargin": ["52.3%", "53.0%", "52.6%", "49.8%"], "grossMarginYoyDelta": ["-109 bps", "-263 bps", "-219 bps", "-144 bps"], "operatingMargin": ["4.0%", "11.8%", "10.0%", "-17.2%"], "operatingMarginYoyDelta": ["-327 bps", "-406 bps", "8 bps", "-2590 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "QGEN", "ltmRevenue": 2090.5, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["5.4%", "7.7%", "6.2%", "3.6%"], "revenueYoyDelta": ["301 bps", "229 bps", "-149 bps", "-257 bps"], "grossMargin": ["63.8%", "61.9%", "62.2%", "60.2%"], "grossMarginYoyDelta": ["42 bps", "5493 bps", "77 bps", "-376 bps"], "operatingMargin": ["23.9%", "21.1%", "24.3%", "18.4%"], "operatingMarginYoyDelta": ["316 bps", "6711 bps", "192 bps", "-445 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "TECH", "ltmRevenue": 1215.6, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["4.2%", "3.5%", "-1.0%", "-0.4%"], "revenueYoyDelta": ["-476 bps", "-65 bps", "-455 bps", "61 bps"], "grossMargin": ["67.9%", "62.7%", "65.6%", "64.6%"], "grossMarginYoyDelta": ["43 bps", "-371 bps", "242 bps", "-63 bps"], "operatingMargin": ["12.2%", "-7.5%", "16.6%", "18.4%"], "operatingMarginYoyDelta": ["-984 bps", "-2250 bps", "282 bps", "244 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}]}, "notes": {"trend": [{"quarter": "2025 Q1", "Green": 0, "Yellow": 0, "Red": 0}, {"quarter": "2025 Q2", "Green": 0, "Yellow": 0, "Red": 0}, {"quarter": "2025 Q3", "Green": 1, "Yellow": 2, "Red": 0}, {"quarter": "2025 Q4", "Green": 0, "Yellow": 3, "Red": 2}], "currentSignalCounts": {"Yellow": 3, "Green": 1, "Red": 2}, "progressColor": "Yellow-Red", "currentSignals": [{"ticker": "DGX", "quarter": "2025Q4", "signal": "Green", "rationale": "Organic volumes accelerating; consumer channel growth supports demand for menu expansion."}, {"ticker": "QGEN", "quarter": "2025 Q4", "signal": "Red", "rationale": "Diagnostics business decelerating with margins contracting"}, {"ticker": "TECH", "quarter": "2025 Q4", "signal": "Red", "rationale": "Earnings primarily driven by Life Sciences business"}, {"ticker": "BIO", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "Clinical strength overcome by supply chain related headwinds and Life Sciences weakness, for now."}, {"ticker": "LH", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "Dx volumes decelerated, attributable to consumer. This could be one-time but company is also heavily investing in biopharma side of the business."}, {"ticker": "RVTY", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "US Dx business strong but idiosyncratic issues with China and Life Sciences obscures thesis"}], "confirming": [{"ticker": "BIO", "text": "ddPCR up MSD and guided 2026 to +MSD as well"}, {"ticker": "DGX", "text": "Consumer offering now includes a new 85-biomarker test."}, {"ticker": "DGX", "text": "Management believes consumer channel can grow 20% for a while."}, {"ticker": "LH", "text": "2026 guidance implies accelertion across both diagnostics and biopharma"}, {"ticker": "LH", "text": "Esoteric testing growing at least double the corporate growth rate"}, {"ticker": "RVTY", "text": "Dx business returned to acceleration (up 7%) on newborn screening and immunodiagnostics"}], "disconfirming": [{"ticker": "BIO", "text": "Guidance implies deceleration in Dx, related to mature product lines"}, {"ticker": "DGX", "text": "PAMA cuts remain an overhang."}, {"ticker": "LH", "text": "PAMA mitigation likely coming"}, {"ticker": "QGEN", "text": "Guidance implies continued deceleration into Q1: discontinued products are outweighing growth areas"}, {"ticker": "QGEN", "text": "Leaning on more acquisitions to meet targets"}, {"ticker": "RVTY", "text": "Guidance implies decel in Dx business (2-3% growth), comping strong instrument placements"}, {"ticker": "TECH", "text": "Dx business decelerating"}], "thematic": [{"ticker": "BIO", "text": "ddPCR is taking share from qPCR"}, {"ticker": "DGX", "text": "Quest + Labcorp are <30% of the market; hospital outreach is key to share gains. ~10,000 labs total."}, {"ticker": "DGX", "text": "PAMA is a problem because only 1% of clinical laboratories are offering data on market rates"}, {"ticker": "LH", "text": "Dx growth engine: oncology, women's health, neurology, autoimmune, genetic testing, MRD testing"}, {"ticker": "LH", "text": "New Approach Methodologies (NAM) could hurt Early Testing businesses (e.g. animal testing)"}, {"ticker": "QGEN", "text": "Parse is single-cell imaging that competes with TXG and ILMN. Automation processes more cell images than competitors."}, {"ticker": "QGEN", "text": "QIAcuity digital PCR (ddPCR) being sold into CDx situations"}, {"ticker": "RVTY", "text": "Launching AI software product for drug discovery (tangential to Dx): Signals Xynthetica"}, {"ticker": "TECH", "text": "Focus areas of Dx business: ESR1 exomsome-based mutation kit (breast cancer therapies test), AmplideX genetic screening."}], "latestSignals": [{"ticker": "BIO", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "Clinical strength overcome by supply chain related headwinds and Life Sciences weakness, for now."}, {"ticker": "DGX", "quarter": "2025Q4", "signal": "Green", "rationale": "Organic volumes accelerating; consumer channel growth supports demand for menu expansion."}, {"ticker": "LH", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "Dx volumes decelerated, attributable to consumer. This could be one-time but company is also heavily investing in biopharma side of the business."}, {"ticker": "QGEN", "quarter": "2025 Q4", "signal": "Red", "rationale": "Diagnostics business decelerating with margins contracting"}, {"ticker": "RVTY", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "US Dx business strong but idiosyncratic issues with China and Life Sciences obscures thesis"}, {"ticker": "TECH", "quarter": "2025 Q4", "signal": "Red", "rationale": "Earnings primarily driven by Life Sciences business"}]}};
+
+    const bucketTable = document.getElementById('bucket-table');
+    const tableHead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    ['Metric', ...payload.kpis.quarters].forEach(label => {
+      const th = document.createElement('th');
+      th.textContent = label;
+      headRow.appendChild(th);
+    });
+    tableHead.appendChild(headRow);
+    bucketTable.appendChild(tableHead);
+
+    const tableBody = document.createElement('tbody');
+    payload.kpis.bucketTable.forEach(row => {
+      const tr = document.createElement('tr');
+      const metric = document.createElement('td');
+      metric.className = 'metric-label';
+      metric.textContent = row.metric;
+      tr.appendChild(metric);
+      row.values.forEach((value, index) => {
+        const td = document.createElement('td');
+        const metricName = payload.kpis.bucketTable.find(item => item.metric === row.metric).metric;
+        if (metricName === 'Revenue YoY Growth') td.textContent = value === null ? 'na' : `${(value * 100).toFixed(1)}%`;
+        else if (metricName.includes('YoY')) td.textContent = value === null ? 'na' : `${value.toFixed(0)} bps`;
+        else td.textContent = value === null ? 'na' : `${value.toFixed(1)}%`;
+        tr.appendChild(td);
+      });
+      tableBody.appendChild(tr);
+    });
+    bucketTable.appendChild(tableBody);
+
+    const counts = payload.notes.currentSignalCounts;
+    const progressPill = document.getElementById('progress-pill');
+    progressPill.textContent = payload.notes.progressColor;
+    progressPill.classList.add(`progress-${payload.notes.progressColor}`);
+    document.getElementById('green-count').textContent = counts.Green || 0;
+    document.getElementById('yellow-count').textContent = counts.Yellow || 0;
+    document.getElementById('red-count').textContent = counts.Red || 0;
+
+    const thesisDetailsToggle = document.getElementById('thesis-details-toggle');
+    const thesisDetailsPanel = document.getElementById('thesis-details-panel');
+    thesisDetailsToggle.addEventListener('click', () => {
+      const isHidden = thesisDetailsPanel.hasAttribute('hidden');
+      if (isHidden) thesisDetailsPanel.removeAttribute('hidden');
+      else thesisDetailsPanel.setAttribute('hidden', '');
+      thesisDetailsToggle.setAttribute('aria-expanded', String(isHidden));
+      thesisDetailsToggle.textContent = isHidden ? 'Hide Thesis Details' : 'Thesis Details';
+    });
+
+    const breadthSnapshot = document.getElementById('breadth-snapshot');
+    [
+      `Revenue accel vs decel: ${payload.kpis.breadth.revenue.accelerating} / ${payload.kpis.breadth.revenue.decelerating}`,
+      `GM expand vs shrink: ${payload.kpis.breadth.grossMargin.expanding} / ${payload.kpis.breadth.grossMargin.contracting}`,
+      `OPM expand vs shrink: ${payload.kpis.breadth.operatingMargin.expanding} / ${payload.kpis.breadth.operatingMargin.contracting}`,
+    ].forEach(line => {
+      const item = document.createElement('div');
+      item.textContent = line;
+      breadthSnapshot.appendChild(item);
+    });
+
+    const interpretation = document.getElementById('interpretation');
+    const revMetric = payload.kpis.bucketTable.find(row => row.metric === 'Revenue YoY Growth');
+    const gmMetric = payload.kpis.bucketTable.find(row => row.metric === 'Gross Margin YoYΔ');
+    const opMetric = payload.kpis.bucketTable.find(row => row.metric === 'Operating Margin YoYΔ');
+    [
+      `Bucket revenue growth averages have moved from ${(revMetric.values[0] * 100).toFixed(1)}% to ${(revMetric.values[revMetric.values.length - 1] * 100).toFixed(1)}% across the displayed quarters.`,
+      `Gross margin pressure is ${(gmMetric.values[gmMetric.values.length - 1] || 0) < 0 ? 'net contracting' : 'still net expanding'} on a simple-average basis, but breadth matters more than the average alone.`,
+      `Operating margins remain the cleaner offset, with ${payload.kpis.breadth.operatingMargin.expanding} names expanding versus ${payload.kpis.breadth.operatingMargin.contracting} shrinking in the latest quarter.`,
+    ].forEach(line => {
+      const item = document.createElement('div');
+      item.textContent = line;
+      interpretation.appendChild(item);
+    });
+
+    const forecastSummary = document.getElementById('forecast-summary');
+    const estimateCoverage = payload.kpis.estimateCoverage || [];
+    if (estimateCoverage.length) {
+      const coverageLine = document.createElement('div');
+      coverageLine.textContent = `Forward revenue estimate coverage: ${estimateCoverage.map(item => `${item.quarter} (${item.count})`).join(' · ')}`;
+      forecastSummary.appendChild(coverageLine);
+    } else {
+      const emptyLine = document.createElement('div');
+      emptyLine.textContent = 'No forward revenue estimates detected in the KPI export.';
+      forecastSummary.appendChild(emptyLine);
+    }
+
+    const forecastScoreboard = document.getElementById('forecast-scoreboard');
+    (payload.kpis.forecastRows || []).forEach(row => {
+      const block = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = `${row.ticker} · Forward Revenue`;
+      const lines = document.createElement('div');
+      lines.className = 'member-lines';
+      [
+        ['Estimate Quarters', row.quarters.join(' → ')],
+        ['Revenue YoY', row.revenueYoy.join(' → ')],
+      ].forEach(([label, value]) => {
+        const line = document.createElement('div');
+        line.innerHTML = `<code>${label}</code> ${value}`;
+        lines.appendChild(line);
+      });
+      block.append(summary, lines);
+      forecastScoreboard.appendChild(block);
+    });
+
+    const distributions = payload.kpis.distribution;
+    const distributionBars = document.getElementById('distribution-bars');
+    const distributionSelect = document.getElementById('distribution-select');
+    document.getElementById('distribution-subhead').textContent = `Latest-quarter company distribution for the selected KPI lens (${payload.kpis.latestDistributionQuarter}).`;
+    function renderDistribution(metric) {
+      distributionBars.innerHTML = '';
+      if (metric === 'Thesis Progress') {
+        const groups = [
+          ['Green', 'green'],
+          ['Yellow', 'yellow'],
+          ['Red', 'red'],
+          ['Missing', 'missing'],
+        ];
+        const cards = document.createElement('div');
+        cards.className = 'signal-groups';
+        groups.forEach(([label, cls]) => {
+          const matches = (payload.notes.currentSignals || []).filter(item => item.signal === label);
+          if (!matches.length) return;
+          const group = document.createElement('div');
+          group.className = `signal-group ${cls}`;
+          const head = document.createElement('div');
+          head.className = 'signal-group-head';
+          head.innerHTML = `<span>${label}</span><span>${matches.length}</span>`;
+          const list = document.createElement('div');
+          list.className = 'signal-company-list';
+          matches.forEach(item => {
+            const pill = document.createElement('div');
+            pill.className = 'signal-company';
+            pill.innerHTML = `<strong>${item.ticker}</strong><small>${item.quarter}</small>`;
+            list.appendChild(pill);
+          });
+          group.append(head, list);
+          cards.appendChild(group);
+        });
+        distributionBars.appendChild(cards);
+        return;
+      }
+      const values = distributions[metric] || [];
+      if (!values.length) return;
+      const min = Math.min(...values.map(item => item.value), 0);
+      const max = Math.max(...values.map(item => item.value), 0);
+      const span = Math.max(max - min, 1);
+      const zeroPos = ((0 - min) / span) * 100;
+      values.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        const name = document.createElement('div');
+        name.textContent = item.ticker;
+        const track = document.createElement('div');
+        track.className = 'bar-track';
+        const zero = document.createElement('div');
+        zero.className = 'bar-zero';
+        zero.style.left = `${zeroPos}%`;
+        const fill = document.createElement('div');
+        fill.className = 'bar-fill';
+        if (item.value < 0) fill.classList.add('negative');
+        const valuePos = ((item.value - min) / span) * 100;
+        fill.style.left = `${Math.min(zeroPos, valuePos)}%`;
+        fill.style.width = `${Math.max(Math.abs(valuePos - zeroPos), 1.2)}%`;
+        track.append(zero, fill);
+        const value = document.createElement('div');
+        value.textContent = item.display;
+        row.append(name, track, value);
+        distributionBars.appendChild(row);
+      });
+    }
+    distributionSelect.addEventListener('change', event => renderDistribution(event.target.value));
+    renderDistribution(distributionSelect.value);
+
+    const signalTrend = document.getElementById('signal-trend');
+    payload.notes.trend.forEach(row => {
+      const total = Math.max(row.Green + row.Yellow + row.Red, 1);
+      const card = document.createElement('div');
+      card.className = 'signal-quarter';
+      const title = document.createElement('div');
+      title.innerHTML = `<strong>${row.quarter}</strong>`;
+      const stack = document.createElement('div');
+      stack.className = 'stack';
+      const col = document.createElement('div');
+      col.className = 'stack-col';
+      [['green', row.Green], ['yellow', row.Yellow], ['red', row.Red]].forEach(([cls, count]) => {
+        const seg = document.createElement('div');
+        seg.className = `seg ${cls}`;
+        seg.style.height = `${(count / total) * 100}%`;
+        seg.title = `${cls}: ${count}`;
+        col.appendChild(seg);
+      });
+      stack.appendChild(col);
+      const foot = document.createElement('div');
+      foot.className = 'signal-counts';
+      [['green', row.Green], ['yellow', row.Yellow], ['red', row.Red]].forEach(([cls, count]) => {
+        const chip = document.createElement('div');
+        chip.className = `signal-chip ${cls}`;
+        chip.innerHTML = `<span>${cls.toUpperCase()}</span><strong>${count}</strong>`;
+        foot.appendChild(chip);
+      });
+      card.append(title, stack, foot);
+      signalTrend.appendChild(card);
+    });
+
+    function renderBulletList(targetId, items) {
+      const target = document.getElementById(targetId);
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="ticker">${item.ticker}</span> ${item.text}`;
+        target.appendChild(li);
+      });
+    }
+    renderBulletList('confirming-list', payload.notes.confirming);
+    renderBulletList('disconfirming-list', payload.notes.disconfirming);
+    renderBulletList('thematic-list', payload.notes.thematic);
+
+    const memberScoreboard = document.getElementById('member-scoreboard');
+    payload.kpis.memberRows.forEach(row => {
+      const block = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = `${row.ticker} · LTM ${row.ltmRevenue}`;
+      const lines = document.createElement('div');
+      lines.className = 'member-lines';
+      [
+        ['Quarters', row.quarters.join(' → ')],
+        ['Rev YoY', row.revenueYoy.join(' → ')],
+        ['Rev YoYΔ', row.revenueYoyDelta.join(' → ')],
+        ['GM', row.grossMargin.join(' → ')],
+        ['GM YoYΔ', row.grossMarginYoyDelta.join(' → ')],
+        ['OPM', row.operatingMargin.join(' → ')],
+        ['OPM YoYΔ', row.operatingMarginYoyDelta.join(' → ')],
+      ].forEach(([label, value]) => {
+        const line = document.createElement('div');
+        line.innerHTML = `<code>${label}</code> ${value}`;
+        lines.appendChild(line);
+      });
+      block.append(summary, lines);
+      memberScoreboard.appendChild(block);
+    });
+  </script>
+</body>
+</html>

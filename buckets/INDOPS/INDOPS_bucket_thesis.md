@@ -2,16 +2,14 @@
 
 Bucket Symbol: .INDOPS  
 Bucket Folder: INDOPS  
-Side: Long / Short  
-Last Updated: 2026-03-03  
+Side: Long  
+Last Updated: 2026-04-09  
 
 ---
 
 ## Core Thesis
 
-{2–4 sentences describing the structural change.  
-What is changing? Why does it persist?  
-Who benefits and through what mechanism?}
+Industrial investments in US create long-tail market opportunity for technology and service providers that enable automation and operating efficiencies.
 
 ---
 
@@ -19,9 +17,7 @@ Who benefits and through what mechanism?}
 
 These must remain true for the thesis to work:
 
-- 
-- 
-- 
+- Capex growth in the US
 
 ---
 
@@ -33,17 +29,17 @@ Evidence that structural drivers of the investment thesis are playing out at the
 
 The investment thesis is playing out at the company level when:
 
-- 
-- 
-- 
+- Revenue acceleration
+- Margin expansion
+- Growing recurring revenue mix
 
 ### Off Track Definition
 
 The investment thesis is deteriorating at the company level when:
 
-- 
-- 
-- 
+- Revenue deceleration
+- Margin contraction
+- Shrinking recurring revenue mix
 
 ---
 
@@ -51,7 +47,7 @@ The investment thesis is deteriorating at the company level when:
 
 Macro, industry, or structural forces that can overwhelm the thesis:
 
-- 
-- 
+- Macro: capex activity is cyclical 
+- Industry: companies need to pursue recurring revenue streams
 - 
 - 

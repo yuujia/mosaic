@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AGENTICS Bucket Dashboard</title>
+  <style>
+    :root {
+      --bg: #f3efe5;
+      --paper: #fffaf0;
+      --ink: #18211f;
+      --muted: #67736f;
+      --line: #d7cdb7;
+      --accent: #8c3f2b;
+      --accent-soft: #e8c1a4;
+      --green: #2f7d4a;
+      --yellow: #b98511;
+      --red: #9f3025;
+      --shadow: 0 18px 50px rgba(24, 33, 31, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(140,63,43,0.18), transparent 30%),
+        linear-gradient(180deg, #f8f4ea 0%, var(--bg) 100%);
+    }
+    .page {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 28px auto 40px;
+    }
+    .hero, .panel {
+      background: var(--paper);
+      border: 1px solid rgba(140, 63, 43, 0.14);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      padding: 28px 30px 24px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(140,63,43,0.16), transparent 70%);
+    }
+    h1, h2, h3 { margin: 0; font-weight: 600; }
+    h1 { font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -0.03em; }
+    h2 { font-size: 1.25rem; margin-bottom: 14px; }
+    h3 { font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .subhead { margin-top: 8px; color: var(--muted); max-width: 760px; line-height: 1.45; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      margin-top: 22px;
+    }
+    .summary-card {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .progress-pill {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .progress-Yellow-Green { background: rgba(47,125,74,0.14); border-color: rgba(47,125,74,0.28); color: var(--green); }
+    .progress-Yellow { background: rgba(185,133,17,0.15); border-color: rgba(185,133,17,0.3); color: var(--yellow); }
+    .progress-Yellow-Red, .progress-Red { background: rgba(159,48,37,0.12); border-color: rgba(159,48,37,0.25); color: var(--red); }
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .stat {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .stat.green { background: rgba(47,125,74,0.10); border-color: rgba(47,125,74,0.25); }
+    .stat.yellow { background: rgba(185,133,17,0.12); border-color: rgba(185,133,17,0.26); }
+    .stat.red { background: rgba(159,48,37,0.10); border-color: rgba(159,48,37,0.22); }
+    .stat-value { font-size: 1.4rem; font-weight: 700; }
+    .summary-link {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 16px;
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 22px;
+    }
+    .panel {
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .metric-label { font-weight: 600; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    select {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font: inherit;
+      color: var(--ink);
+    }
+    .bars {
+      display: grid;
+      gap: 12px;
+    }
+    .signal-groups {
+      display: grid;
+      gap: 14px;
+    }
+    .signal-group {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      padding: 14px;
+    }
+    .signal-group.green { border-color: rgba(47,125,74,0.24); background: rgba(47,125,74,0.06); }
+    .signal-group.yellow { border-color: rgba(185,133,17,0.26); background: rgba(185,133,17,0.08); }
+    .signal-group.red { border-color: rgba(159,48,37,0.24); background: rgba(159,48,37,0.06); }
+    .signal-group.missing { border-color: rgba(103,115,111,0.20); background: rgba(103,115,111,0.05); }
+    .signal-group-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .signal-company-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .signal-company {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fffdf8;
+      font-size: 0.9rem;
+    }
+    .signal-company small {
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 44px;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.93rem;
+    }
+    .bar-track {
+      height: 18px;
+      border-radius: 999px;
+      background: #efe6d2;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-zero {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 2px;
+      background: rgba(24, 33, 31, 0.28);
+      transform: translateX(-1px);
+    }
+    .bar-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent) 0%, #c46f4d 100%);
+    }
+    .bar-fill.negative {
+      background: linear-gradient(90deg, #c98a5b 0%, var(--red) 100%);
+    }
+    .signal-trend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+      gap: 10px;
+    }
+    .signal-quarter {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+    }
+    .stack {
+      height: 82px;
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .stack-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 4px;
+      min-width: 0;
+    }
+    .signal-counts {
+      display: grid;
+      gap: 5px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+    .signal-chip {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fffaf6;
+    }
+    .signal-chip.green { color: var(--green); border-color: rgba(47,125,74,0.22); background: rgba(47,125,74,0.08); }
+    .signal-chip.yellow { color: var(--yellow); border-color: rgba(185,133,17,0.24); background: rgba(185,133,17,0.10); }
+    .signal-chip.red { color: var(--red); border-color: rgba(159,48,37,0.22); background: rgba(159,48,37,0.08); }
+    .seg { border-radius: 8px 8px 2px 2px; }
+    .seg.green { background: rgba(47,125,74,0.8); }
+    .seg.yellow { background: rgba(185,133,17,0.8); }
+    .seg.red { background: rgba(159,48,37,0.82); }
+    .bullet-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .bullet-list li {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      line-height: 1.4;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .details-grid .panel {
+      margin-bottom: 0;
+    }
+    .ticker {
+      display: inline-block;
+      min-width: 52px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      padding: 10px 14px;
+    }
+    details + details { margin-top: 10px; }
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .member-lines {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+      font-size: 0.94rem;
+    }
+    .member-lines code { font-family: "SFMono-Regular", Consolas, monospace; background: #f4ede0; padding: 2px 6px; border-radius: 6px; }
+    .muted { color: var(--muted); }
+    @media (max-width: 900px) {
+      .hero-grid, .layout { grid-template-columns: 1fr; }
+      .details-grid { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <h1>AGENTICS Bucket Dashboard</h1>
+      <p class="subhead">Connector-safe bucket dashboard built from the KPI CSV export, company notes, and thesis progress signals. This view leads with the bucket KPI trend table, then shows breadth and note evidence.</p>
+      <div class="hero-grid">
+        <div class="summary-card">
+          <h3>Thesis Progress - Current Status</h3>
+          <div id="progress-pill" class="progress-pill"></div>
+          <div class="summary-stats">
+            <div class="stat green"><div class="muted">Green</div><div class="stat-value" id="green-count"></div></div>
+            <div class="stat yellow"><div class="muted">Yellow</div><div class="stat-value" id="yellow-count"></div></div>
+            <div class="stat red"><div class="muted">Red</div><div class="stat-value" id="red-count"></div></div>
+          </div>
+          <button type="button" id="thesis-details-toggle" class="summary-link" aria-expanded="false">Thesis Details</button>
+        </div>
+        <div class="summary-card">
+          <h3>Breadth Snapshot</h3>
+          <div class="member-lines" id="breadth-snapshot"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="thesis-details-panel" class="panel" hidden>
+      <h2>Thesis Details</h2>
+      <div class="details-grid">
+        <section class="panel">
+          <h2>Thesis Confirming</h2>
+          <ul class="bullet-list" id="confirming-list"></ul>
+        </section>
+        <section class="panel">
+          <h2>Thesis Disconfirming</h2>
+          <ul class="bullet-list" id="disconfirming-list"></ul>
+        </section>
+        <section class="panel">
+          <h2>Thematic Color</h2>
+          <ul class="bullet-list" id="thematic-list"></ul>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Thesis Progress Trend</h2>
+      <div class="signal-trend" id="signal-trend"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Bucket KPI Trend</h2>
+      <table id="bucket-table"></table>
+    </section>
+
+    <section class="panel">
+      <h2>Interpretation</h2>
+      <div class="member-lines" id="interpretation"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Forward Estimates</h2>
+      <div class="member-lines" id="forecast-summary"></div>
+      <div id="forecast-scoreboard"></div>
+    </section>
+
+    <section class="panel">
+      <div class="controls">
+        <div>
+          <h2 style="margin-bottom:6px">Company Distribution</h2>
+          <div class="muted" id="distribution-subhead">Latest-quarter company distribution for the selected KPI lens.</div>
+        </div>
+        <select id="distribution-select">
+          <option>Thesis Progress</option>
+          <option>Revenue YoY Growth</option>
+          <option>Revenue YoYΔ</option>
+          <option>Gross Margin</option>
+          <option>Gross Margin YoYΔ</option>
+          <option>Operating Margin</option>
+          <option>Operating Margin YoYΔ</option>
+        </select>
+      </div>
+      <div class="bars" id="distribution-bars"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Member Scoreboard</h2>
+      <div id="member-scoreboard"></div>
+    </section>
+  </div>
+
+  <script>
+    const payload = {"bucket": "AGENTICS", "kpis": {"quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "latestDistributionQuarter": "Q4 2025", "bucketTable": [{"metric": "Revenue YoY Growth", "values": [0.122230163299024, 0.13202935186306738, 0.12886064119444365, 0.12089145374101]}, {"metric": "Revenue YoY\u0394", "values": [44.854443068792044, 75.0502679050098, -31.68710668623754, -79.69187453433656]}, {"metric": "Gross Margin", "values": [70.85596, 71.49039523809523, 71.31950952380953, 71.56320476190476]}, {"metric": "Gross Margin YoY\u0394", "values": [33.08649999999981, 1.3285714285713384, 19.733333333333402, 25.106666666666687]}, {"metric": "Operating Margin", "values": [-1.09065, 2.662004761904762, 1.9765095238095238, 5.108290476190476]}, {"metric": "Operating Margin YoY\u0394", "values": [263.94, 198.94095238095238, 174.75095238095238, 589.2333333333333]}], "breadth": {"revenue": {"accelerating": 5, "decelerating": 16}, "grossMargin": {"expanding": 11, "contracting": 10}, "operatingMargin": {"expanding": 15, "contracting": 6}}, "distribution": {"Revenue YoY Growth": [{"ticker": "AVPT", "value": 28.5973784241391, "display": "28.6%"}, {"ticker": "PAY", "value": 28.145588788453402, "display": "28.1%"}, {"ticker": "WK", "value": 19.5338412819114, "display": "19.5%"}, {"ticker": "INTU", "value": 18.3368869936034, "display": "18.3%"}, {"ticker": "AMPL", "value": 17.0175730503897, "display": "17.0%"}, {"ticker": "INTA", "value": 15.674578620399501, "display": "15.7%"}, {"ticker": "FRSH", "value": 14.4774915069563, "display": "14.5%"}, {"ticker": "BILL", "value": 14.3749620746151, "display": "14.4%"}, {"ticker": "WIX", "value": 13.858900435438901, "display": "13.9%"}, {"ticker": "SPSC", "value": 12.723293955192, "display": "12.7%"}, {"ticker": "LAW", "value": 11.2759804319036, "display": "11.3%"}, {"ticker": "TENB", "value": 10.5213145492108, "display": "10.5%"}, {"ticker": "QLYS", "value": 10.107983491529, "display": "10.1%"}, {"ticker": "VRNS", "value": 9.371411988846411, "display": "9.4%"}, {"ticker": "DOCU", "value": 8.41657613735725, "display": "8.4%"}, {"ticker": "FIVN", "value": 7.7592765377162, "display": "7.8%"}, {"ticker": "GDDY", "value": 6.8170384034882, "display": "6.8%"}, {"ticker": "TYL", "value": 6.29200692623413, "display": "6.3%"}, {"ticker": "ZIP", "value": 0.630630630630624, "display": "0.6%"}, {"ticker": "RPD", "value": 0.521129561039668, "display": "0.5%"}, {"ticker": "OTEX", "value": -0.581790932933679, "display": "-0.6%"}], "Revenue YoY\u0394": [{"ticker": "AVPT", "value": 503.537671250451, "display": "504 bps"}, {"ticker": "BILL", "value": 397.15585315826, "display": "397 bps"}, {"ticker": "ZIP", "value": 242.59228994291, "display": "243 bps"}, {"ticker": "WIX", "value": 24.8674494129175, "display": "25 bps"}, {"ticker": "VRNS", "value": 24.7901169493159, "display": "25 bps"}, {"ticker": "QLYS", "value": -30.0356178445682, "display": "-30 bps"}, {"ticker": "DOCU", "value": -36.1498580010444, "display": "-36 bps"}, {"ticker": "FIVN", "value": -43.5831380310003, "display": "-44 bps"}, {"ticker": "TENB", "value": -64.2639512650711, "display": "-64 bps"}, {"ticker": "AMPL", "value": -72.7085736852495, "display": "-73 bps"}, {"ticker": "FRSH", "value": -82.0913960014047, "display": "-82 bps"}, {"ticker": "RPD", "value": -101.902342935418, "display": "-102 bps"}, {"ticker": "WK", "value": -123.158935363086, "display": "-123 bps"}, {"ticker": "INTA", "value": -134.659052231336, "display": "-135 bps"}, {"ticker": "LAW", "value": -155.421865263843, "display": "-155 bps"}, {"ticker": "INTU", "value": -198.346476519056, "display": "-198 bps"}, {"ticker": "OTEX", "value": -208.927120290897, "display": "-209 bps"}, {"ticker": "SPSC", "value": -329.395858931396, "display": "-329 bps"}, {"ticker": "TYL", "value": -337.823456293374, "display": "-338 bps"}, {"ticker": "GDDY", "value": -343.91484211894, "display": "-344 bps"}, {"ticker": "PAY", "value": -604.090261159238, "display": "-604 bps"}], "Gross Margin": [{"ticker": "ZIP", "value": 89.1299, "display": "89.1%"}, {"ticker": "FRSH", "value": 85.5572, "display": "85.6%"}, {"ticker": "QLYS", "value": 83.36, "display": "83.4%"}, {"ticker": "WK", "value": 80.678, "display": "80.7%"}, {"ticker": "BILL", "value": 79.8423, "display": "79.8%"}, {"ticker": "DOCU", "value": 79.1598, "display": "79.2%"}, {"ticker": "VRNS", "value": 78.9132, "display": "78.9%"}, {"ticker": "TENB", "value": 78.7781, "display": "78.8%"}, {"ticker": "INTU", "value": 77.2716, "display": "77.3%"}, {"ticker": "LAW", "value": 75.15, "display": "75.2%"}, {"ticker": "INTA", "value": 74.9872, "display": "75.0%"}, {"ticker": "AMPL", "value": 74.6289, "display": "74.6%"}, {"ticker": "OTEX", "value": 74.0313, "display": "74.0%"}, {"ticker": "AVPT", "value": 73.5994, "display": "73.6%"}, {"ticker": "SPSC", "value": 70.4353, "display": "70.4%"}, {"ticker": "RPD", "value": 68.9417, "display": "68.9%"}, {"ticker": "WIX", "value": 67.3273, "display": "67.3%"}, {"ticker": "GDDY", "value": 64.644, "display": "64.6%"}, {"ticker": "FIVN", "value": 55.4272, "display": "55.4%"}, {"ticker": "TYL", "value": 45.5481, "display": "45.5%"}, {"ticker": "PAY", "value": 25.4168, "display": "25.4%"}], "Gross Margin YoY\u0394": [{"ticker": "WK", "value": 353.52, "display": "354 bps"}, {"ticker": "SPSC", "value": 295.88, "display": "296 bps"}, {"ticker": "INTU", "value": 234.010000000001, "display": "234 bps"}, {"ticker": "TYL", "value": 178.44, "display": "178 bps"}, {"ticker": "INTA", "value": 177.65, "display": "178 bps"}, {"ticker": "QLYS", "value": 160.039999999999, "display": "160 bps"}, {"ticker": "LAW", "value": 91.8300000000002, "display": "92 bps"}, {"ticker": "OTEX", "value": 74.7200000000007, "display": "75 bps"}, {"ticker": "FRSH", "value": 69.7699999999998, "display": "70 bps"}, {"ticker": "TENB", "value": 59.9199999999996, "display": "60 bps"}, {"ticker": "GDDY", "value": 1.21000000000038, "display": "1 bps"}, {"ticker": "AMPL", "value": -2.13999999999999, "display": "-2 bps"}, {"ticker": "DOCU", "value": -10.1900000000001, "display": "-10 bps"}, {"ticker": "PAY", "value": -18.8000000000002, "display": "-19 bps"}, {"ticker": "ZIP", "value": -50.7999999999996, "display": "-51 bps"}, {"ticker": "FIVN", "value": -55.3899999999999, "display": "-55 bps"}, {"ticker": "RPD", "value": -58.9600000000004, "display": "-59 bps"}, {"ticker": "WIX", "value": -147.83, "display": "-148 bps"}, {"ticker": "BILL", "value": -178.580000000001, "display": "-179 bps"}, {"ticker": "AVPT", "value": -182.079999999999, "display": "-182 bps"}, {"ticker": "VRNS", "value": -464.98, "display": "-465 bps"}], "Operating Margin": [{"ticker": "QLYS", "value": 33.5659, "display": "33.6%"}, {"ticker": "GDDY", "value": 24.8842, "display": "24.9%"}, {"ticker": "OTEX", "value": 21.9904, "display": "22.0%"}, {"ticker": "SPSC", "value": 18.0045, "display": "18.0%"}, {"ticker": "FRSH", "value": 17.8387, "display": "17.8%"}, {"ticker": "INTU", "value": 13.7452, "display": "13.7%"}, {"ticker": "TYL", "value": 13.0351, "display": "13.0%"}, {"ticker": "AVPT", "value": 12.6649, "display": "12.7%"}, {"ticker": "DOCU", "value": 10.4301, "display": "10.4%"}, {"ticker": "PAY", "value": 7.2832, "display": "7.3%"}, {"ticker": "FIVN", "value": 6.5925, "display": "6.6%"}, {"ticker": "ZIP", "value": 3.5819, "display": "3.6%"}, {"ticker": "TENB", "value": 3.3988, "display": "3.4%"}, {"ticker": "WK", "value": 3.2896, "display": "3.3%"}, {"ticker": "RPD", "value": 1.0451, "display": "1.0%"}, {"ticker": "BILL", "value": -4.3591, "display": "-4.4%"}, {"ticker": "INTA", "value": -5.1188, "display": "-5.1%"}, {"ticker": "WIX", "value": -13.8456, "display": "-13.8%"}, {"ticker": "VRNS", "value": -17.4553, "display": "-17.5%"}, {"ticker": "AMPL", "value": -20.8494, "display": "-20.8%"}, {"ticker": "LAW", "value": -22.4478, "display": "-22.4%"}], "Operating Margin YoY\u0394": [{"ticker": "LAW", "value": 4817.57, "display": "4818 bps"}, {"ticker": "FRSH", "value": 3006.66, "display": "3007 bps"}, {"ticker": "AMPL", "value": 2459.35, "display": "2459 bps"}, {"ticker": "WK", "value": 995.33, "display": "995 bps"}, {"ticker": "AVPT", "value": 722.33, "display": "722 bps"}, {"ticker": "ZIP", "value": 719.93, "display": "720 bps"}, {"ticker": "INTU", "value": 549.06, "display": "549 bps"}, {"ticker": "FIVN", "value": 509.25, "display": "509 bps"}, {"ticker": "SPSC", "value": 352.65, "display": "353 bps"}, {"ticker": "GDDY", "value": 345.2, "display": "345 bps"}, {"ticker": "INTA", "value": 328.49, "display": "328 bps"}, {"ticker": "DOCU", "value": 260.97, "display": "261 bps"}, {"ticker": "QLYS", "value": 252.58, "display": "253 bps"}, {"ticker": "PAY", "value": 178.06, "display": "178 bps"}, {"ticker": "BILL", "value": 162.9, "display": "163 bps"}, {"ticker": "OTEX", "value": -17.51, "display": "-18 bps"}, {"ticker": "TYL", "value": -21.2300000000001, "display": "-21 bps"}, {"ticker": "TENB", "value": -210.54, "display": "-211 bps"}, {"ticker": "RPD", "value": -232.07, "display": "-232 bps"}, {"ticker": "VRNS", "value": -638.25, "display": "-638 bps"}, {"ticker": "WIX", "value": -2166.83, "display": "-2167 bps"}]}, "estimateCoverage": [], "forecastRows": [], "memberRows": [{"ticker": "INTU", "ltmRevenue": 20121.0, "quarters": ["Q2 2025", "Q3 2025", "Q4 2025", "Q1 2026"], "revenueYoy": ["15.1%", "20.3%", "18.3%", "17.4%"], "revenueYoyDelta": ["-195 bps", "522 bps", "-198 bps", "-98 bps"], "grossMargin": ["84.6%", "76.7%", "77.3%", "77.6%"], "grossMarginYoyDelta": ["44 bps", "126 bps", "234 bps", "122 bps"], "operatingMargin": ["48.0%", "8.8%", "13.7%", "18.4%"], "operatingMarginYoyDelta": ["189 bps", "1359 bps", "549 bps", "342 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "OTEX", "ltmRevenue": 5179.2, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["-13.3%", "-3.8%", "1.5%", "-0.6%"], "revenueYoyDelta": ["-27 bps", "949 bps", "534 bps", "-209 bps"], "grossMargin": ["71.6%", "72.3%", "72.8%", "74.0%"], "grossMarginYoyDelta": ["-135 bps", "-20 bps", "104 bps", "75 bps"], "operatingMargin": ["16.7%", "13.9%", "21.0%", "22.0%"], "operatingMarginYoyDelta": ["98 bps", "-33 bps", "470 bps", "-18 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "GDDY", "ltmRevenue": 4951.1, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["7.7%", "8.3%", "10.3%", "6.8%"], "revenueYoyDelta": ["-65 bps", "54 bps", "198 bps", "-344 bps"], "grossMargin": ["63.1%", "63.7%", "63.0%", "64.6%"], "grossMarginYoyDelta": ["51 bps", "-2 bps", "-151 bps", "1 bps"], "operatingMargin": ["20.7%", "21.9%", "23.4%", "24.9%"], "operatingMarginYoyDelta": ["484 bps", "336 bps", "133 bps", "345 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "DOCU", "ltmRevenue": 3158.9, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["9.0%", "7.6%", "8.8%", "8.4%"], "revenueYoyDelta": ["120 bps", "-135 bps", "117 bps", "-36 bps"], "grossMargin": ["79.4%", "79.4%", "79.3%", "79.2%"], "grossMarginYoyDelta": ["12 bps", "47 bps", "46 bps", "-10 bps"], "operatingMargin": ["7.8%", "7.9%", "8.1%", "10.4%"], "operatingMarginYoyDelta": ["640 bps", "470 bps", "29 bps", "261 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "TYL", "ltmRevenue": 2332.3, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["10.3%", "10.2%", "9.7%", "6.3%"], "revenueYoyDelta": ["-221 bps", "-11 bps", "-52 bps", "-338 bps"], "grossMargin": ["47.3%", "45.8%", "47.2%", "45.5%"], "grossMarginYoyDelta": ["360 bps", "187 bps", "353 bps", "178 bps"], "operatingMargin": ["15.8%", "16.0%", "16.4%", "13.0%"], "operatingMarginYoyDelta": ["271 bps", "161 bps", "119 bps", "-21 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "WIX", "ltmRevenue": 1993.0, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["12.8%", "12.4%", "13.6%", "13.9%"], "revenueYoyDelta": ["-120 bps", "-40 bps", "118 bps", "25 bps"], "grossMargin": ["68.0%", "68.7%", "68.3%", "67.3%"], "grossMarginYoyDelta": ["66 bps", "121 bps", "28 bps", "-148 bps"], "operatingMargin": ["7.9%", "9.0%", "-1.5%", "-13.8%"], "operatingMarginYoyDelta": ["559 bps", "248 bps", "-727 bps", "-2167 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "BILL", "ltmRevenue": 1552.0, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["10.9%", "11.5%", "10.4%", "14.4%"], "revenueYoyDelta": ["-294 bps", "65 bps", "-114 bps", "397 bps"], "grossMargin": ["81.2%", "80.8%", "80.5%", "79.8%"], "grossMarginYoyDelta": ["-173 bps", "-22 bps", "-141 bps", "-179 bps"], "operatingMargin": ["-8.1%", "-5.8%", "-5.2%", "-4.4%"], "operatingMarginYoyDelta": ["47 bps", "66 bps", "-309 bps", "163 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "PAY", "ltmRevenue": 1196.5, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["48.9%", "41.9%", "34.2%", "28.1%"], "revenueYoyDelta": ["-760 bps", "-701 bps", "-768 bps", "-604 bps"], "grossMargin": ["24.0%", "25.5%", "24.1%", "25.4%"], "grossMarginYoyDelta": ["-453 bps", "-424 bps", "-211 bps", "-19 bps"], "operatingMargin": ["5.7%", "5.7%", "6.4%", "7.3%"], "operatingMarginYoyDelta": ["119 bps", "50 bps", "117 bps", "178 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "FIVN", "ltmRevenue": 1149.1, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["13.2%", "12.4%", "8.2%", "7.8%"], "revenueYoyDelta": ["-333 bps", "-87 bps", "-417 bps", "-44 bps"], "grossMargin": ["55.0%", "54.9%", "55.0%", "55.4%"], "grossMarginYoyDelta": ["133 bps", "183 bps", "118 bps", "-55 bps"], "operatingMargin": ["-1.9%", "-0.6%", "5.6%", "6.6%"], "operatingMarginYoyDelta": ["644 bps", "713 bps", "1145 bps", "509 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "TENB", "ltmRevenue": 999.4, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["10.7%", "11.8%", "11.2%", "10.5%"], "revenueYoyDelta": ["22 bps", "104 bps", "-61 bps", "-64 bps"], "grossMargin": ["78.1%", "78.0%", "77.5%", "78.8%"], "grossMarginYoyDelta": ["72 bps", "4 bps", "-24 bps", "60 bps"], "operatingMargin": ["-7.4%", "-3.0%", "2.8%", "3.4%"], "operatingMarginYoyDelta": ["-327 bps", "97 bps", "374 bps", "-211 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "WK", "ltmRevenue": 884.6, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["17.4%", "21.2%", "20.8%", "19.5%"], "revenueYoyDelta": ["-252 bps", "380 bps", "-46 bps", "-123 bps"], "grossMargin": ["76.6%", "77.0%", "79.3%", "80.7%"], "grossMarginYoyDelta": ["20 bps", "17 bps", "284 bps", "354 bps"], "operatingMargin": ["-12.0%", "-10.3%", "-1.5%", "3.3%"], "operatingMarginYoyDelta": ["-159 bps", "275 bps", "1022 bps", "995 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "RPD", "ltmRevenue": 859.8, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["2.5%", "3.0%", "1.5%", "0.5%"], "revenueYoyDelta": ["-284 bps", "47 bps", "-144 bps", "-102 bps"], "grossMargin": ["71.7%", "70.6%", "70.2%", "68.9%"], "grossMarginYoyDelta": ["145 bps", "-19 bps", "-46 bps", "-59 bps"], "operatingMargin": ["-0.0%", "1.6%", "2.7%", "1.0%"], "operatingMarginYoyDelta": ["-479 bps", "-168 bps", "-380 bps", "-232 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "FRSH", "ltmRevenue": 838.8, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["18.9%", "17.5%", "15.3%", "14.5%"], "revenueYoyDelta": ["-267 bps", "-131 bps", "-224 bps", "-82 bps"], "grossMargin": ["84.8%", "84.8%", "84.7%", "85.6%"], "grossMarginYoyDelta": ["45 bps", "97 bps", "66 bps", "70 bps"], "operatingMargin": ["-5.3%", "-4.2%", "-3.5%", "17.8%"], "operatingMarginYoyDelta": ["1417 bps", "2092 bps", "1736 bps", "3007 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "SPSC", "ltmRevenue": 751.5, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["21.4%", "22.0%", "16.0%", "12.7%"], "revenueYoyDelta": ["348 bps", "63 bps", "-599 bps", "-329 bps"], "grossMargin": ["68.7%", "68.1%", "69.5%", "70.4%"], "grossMarginYoyDelta": ["307 bps", "194 bps", "103 bps", "296 bps"], "operatingMargin": ["14.3%", "14.1%", "16.4%", "18.0%"], "operatingMarginYoyDelta": ["400 bps", "-96 bps", "80 bps", "353 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "QLYS", "ltmRevenue": 669.1, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["9.7%", "10.3%", "10.4%", "10.1%"], "revenueYoyDelta": ["-45 bps", "66 bps", "8 bps", "-30 bps"], "grossMargin": ["81.9%", "82.4%", "83.6%", "83.4%"], "grossMarginYoyDelta": ["56 bps", "16 bps", "238 bps", "160 bps"], "operatingMargin": ["32.4%", "31.3%", "35.3%", "33.6%"], "operatingMarginYoyDelta": ["167 bps", "-99 bps", "608 bps", "253 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "VRNS", "ltmRevenue": 623.5, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["19.6%", "16.7%", "9.1%", "9.4%"], "revenueYoyDelta": ["1678 bps", "-291 bps", "-761 bps", "25 bps"], "grossMargin": ["78.7%", "79.5%", "78.2%", "78.9%"], "grossMarginYoyDelta": ["-255 bps", "-332 bps", "-554 bps", "-465 bps"], "operatingMargin": ["-32.1%", "-24.0%", "-22.2%", "-17.5%"], "operatingMarginYoyDelta": ["969 bps", "-191 bps", "-627 bps", "-638 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "INTA", "ltmRevenue": 543.3, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["16.7%", "18.1%", "17.0%", "15.7%"], "revenueYoyDelta": ["3 bps", "141 bps", "-104 bps", "-135 bps"], "grossMargin": ["74.7%", "74.8%", "74.7%", "75.0%"], "grossMarginYoyDelta": ["233 bps", "164 bps", "156 bps", "178 bps"], "operatingMargin": ["-4.4%", "-3.1%", "-10.4%", "-5.1%"], "operatingMarginYoyDelta": ["231 bps", "-339 bps", "-429 bps", "328 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "ZIP", "ltmRevenue": 449.0, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["-9.9%", "-9.3%", "-1.8%", "0.6%"], "revenueYoyDelta": ["839 bps", "66 bps", "748 bps", "243 bps"], "grossMargin": ["89.4%", "89.3%", "89.1%", "89.1%"], "grossMarginYoyDelta": ["31 bps", "-19 bps", "-31 bps", "-51 bps"], "operatingMargin": ["-10.6%", "-5.9%", "-4.4%", "3.6%"], "operatingMarginYoyDelta": ["-986 bps", "-1356 bps", "-161 bps", "720 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "AVPT", "ltmRevenue": 419.5, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["24.9%", "30.9%", "23.6%", "28.6%"], "revenueYoyDelta": ["535 bps", "600 bps", "-730 bps", "504 bps"], "grossMargin": ["74.3%", "74.0%", "74.4%", "73.6%"], "grossMarginYoyDelta": ["175 bps", "-166 bps", "-175 bps", "-182 bps"], "operatingMargin": ["3.5%", "7.0%", "7.4%", "12.7%"], "operatingMarginYoyDelta": ["783 bps", "970 bps", "-121 bps", "722 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "AMPL", "ltmRevenue": 343.2, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["10.1%", "13.6%", "17.7%", "17.0%"], "revenueYoyDelta": ["67 bps", "351 bps", "414 bps", "-73 bps"], "grossMargin": ["74.7%", "72.6%", "73.9%", "74.6%"], "grossMarginYoyDelta": ["74 bps", "-81 bps", "-113 bps", "-2 bps"], "operatingMargin": ["-30.3%", "-32.5%", "-29.0%", "-20.8%"], "operatingMarginYoyDelta": ["375 bps", "452 bps", "-236 bps", "2459 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}, {"ticker": "LAW", "ltmRevenue": 156.8, "quarters": ["Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"], "revenueYoy": ["3.0%", "5.8%", "12.8%", "11.3%"], "revenueYoyDelta": ["-48 bps", "279 bps", "699 bps", "-155 bps"], "grossMargin": ["74.1%", "74.6%", "75.5%", "75.2%"], "grossMarginYoyDelta": ["-104 bps", "39 bps", "240 bps", "92 bps"], "operatingMargin": ["-34.4%", "-31.0%", "-35.3%", "-22.4%"], "operatingMarginYoyDelta": ["27 bps", "340 bps", "-535 bps", "4818 bps"], "forwardRevenueEstimateQuarters": [], "forwardRevenueEstimateYoy": []}]}, "notes": {"trend": [{"quarter": "2025 Q1", "Green": 0, "Yellow": 0, "Red": 0}, {"quarter": "2025 Q2", "Green": 4, "Yellow": 1, "Red": 0}, {"quarter": "2025 Q3", "Green": 5, "Yellow": 2, "Red": 0}, {"quarter": "2025 Q4", "Green": 8, "Yellow": 10, "Red": 2}], "currentSignalCounts": {"Green": 9, "Red": 2, "Yellow": 10}, "progressColor": "Yellow-Green", "currentSignals": [{"ticker": "AMPL", "quarter": "2025 Q4", "signal": "Green", "rationale": "Gross margin contraction and agentic offering not expected to drive pricing"}, {"ticker": "DOCU", "quarter": "2025 Q3", "signal": "Green", "rationale": "AI product still in beta, but topline already decelerating despite new product ramp"}, {"ticker": "FIVN", "quarter": "2025 Q4", "signal": "Green", "rationale": "revenue decelerating on live agents demand, AI is still small percentage of revenue"}, {"ticker": "FRSH", "quarter": "2025 Q4", "signal": "Green", "rationale": "revenue deceleration despite launch of agentic products"}, {"ticker": "GDDY", "quarter": "2025 Q4", "signal": "Green", "rationale": "bookings deceleration despite AI tools"}, {"ticker": "LAW", "quarter": "2025 Q4", "signal": "Green", "rationale": "fundamentals decelerating, and unable to separately monetize AI agent"}, {"ticker": "OTEX", "quarter": "2025 Q4", "signal": "Green", "rationale": "Decelerating growth trends, current approach to AI unclear"}, {"ticker": "QLYS", "quarter": "2025 Q4", "signal": "Green", "rationale": "Fundamentals trending towards deceleration with AI competition in adjacent markets"}, {"ticker": "TYL", "quarter": "2025 Q4", "signal": "Green", "rationale": "AI not moving the needle: growth continues to decelerate despite product launch and SaaS strength"}, {"ticker": "CWAN", "quarter": "{{latest_calendar_period}}", "signal": "Missing", "rationale": ""}, {"ticker": "AVPT", "quarter": "2025 Q4", "signal": "Red", "rationale": "revenue drivers accelerating and operating margins expanding"}, {"ticker": "INTU", "quarter": "2026 Q1", "signal": "Red", "rationale": "Evidence of AI tailwinds internally and service offering."}, {"ticker": "BILL", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "revenue drivers accelerating and operating margins expanding, but seeing gross margin contraction as pricing comes into focus"}, {"ticker": "INTA", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "ARR accelerating, but Anthropic announcements in legal field suggest competition is coming"}, {"ticker": "PAY", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "Fundamentals are decelerating but unclear if there is an AI threat given they are much more of a payments company"}, {"ticker": "RPD", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamentals decelerating, implementation of AI into services delivery slow."}, {"ticker": "SPSC", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamentals decelerating on macro"}, {"ticker": "TENB", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamentals decelerating, AI not a tailwind but unclear if its an actual headwind yet."}, {"ticker": "VRNS", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamentals worsening but partially due to non-SaaS transition, and unclear if AI threats emerge"}, {"ticker": "WIX", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "Recent quarter demonstrated revenue acceleration from new AI product uptake, but more than offset by margin dilution from inference costs."}, {"ticker": "WK", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "earnings decelerating but not yet seeing AI headwinds"}, {"ticker": "ZIP", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamental weakness primarily driven by job market, unclear extent that AI is a headwind"}], "confirming": [{"ticker": "AMPL", "text": "Gross margin contraction: potentially related to pricing"}, {"ticker": "BILL", "text": "Gross margin contraction: potentially related to pricing"}, {"ticker": "DOCU", "text": "Revenue deceleration: core product maturing ahead of AI agent launch"}, {"ticker": "FIVN", "text": "Total revenue deceleration: live agents seats under pressure"}, {"ticker": "GDDY", "text": "Bookings deceleration: resorting to promotional pricing for bundled offering"}, {"ticker": "INTA", "text": "Anthropic announced plugins for legal work (though not an alternative to INTA)"}, {"ticker": "LAW", "text": "Pricing: now including AI product into a single offering with DISCO, eDiscovery"}, {"ticker": "OTEX", "text": "Growth deceleration (bookings and ARR): Aviator AI not offsetting slow down in non-core businesses"}, {"ticker": "QLYS", "text": "Billings and revenue deceleration despite offering ETM with agentic AI features"}, {"ticker": "QLYS", "text": "Competitive threats: Anthropic and ServiceNow"}, {"ticker": "RPD", "text": "Revenue decline: software seeing churn"}, {"ticker": "RPD", "text": "Margins shrinking: MDR costs weighing on model, no tailwind from AI yet"}, {"ticker": "TYL", "text": "Revenue decelerating: despite SaaS strength and AI offerings"}, {"ticker": "WIX", "text": "Margins shrinking: inference cost of AI products weighing"}], "disconfirming": [{"ticker": "AMPL", "text": "Revenue acceleration: broad suite adoption"}, {"ticker": "AVPT", "text": "Revenue acceleration: broad suite adoption"}, {"ticker": "AVPT", "text": "Operating leverage: despite gross margin contraction"}, {"ticker": "BILL", "text": "Revenue acceleration: software adoption, notably AR/AP product"}, {"ticker": "FIVN", "text": "Enterprise AI revenue accelerated (subsegment, undisclosed dollars)"}, {"ticker": "INTU", "text": "Revenues and margins expanding: AI being integrated into assisted services offering"}, {"ticker": "WIX", "text": "Revenue acceleration: attributed to Base44 and Harmony bookings"}], "thematic": [{"ticker": "AMPL", "text": "Total product suite could expand wallet by 2-3x vs core analytics piece"}, {"ticker": "AMPL", "text": "Not going to increase prices on agentic offerings, offering it as part of value"}, {"ticker": "AVPT", "text": "Services M365, Sales Force, Google, Azure, and others"}, {"ticker": "AVPT", "text": "Data management vendor like AVPT are selling into customers prepping for AI, and then potentially going into managing agents (consumption and cost control, cybersecurity issues)"}, {"ticker": "AVPT", "text": "Still hiring tech headcount, gaining producitivty improvements with AI-driven IDEs"}, {"ticker": "BILL", "text": "Agentic AI launched for W9 collections (supplier management), invoice coding"}, {"ticker": "DOCU", "text": "AI contract agents to be launched for sales, HR, and procurement use cases; trained on their Navigator repository data"}, {"ticker": "FIVN", "text": "Claims customers aren't reducing live agents, keeping them flat and demanding more value from seats"}, {"ticker": "FIVN", "text": "Call centers are still 40% in cloud, migration decisions are now going hand-in-hand with AI adoption decisions"}, {"ticker": "FRSH", "text": "FireHydrant acquisition: AI IT incident management and response software"}, {"ticker": "FRSH", "text": "Freddy AI is at $25M in ARR: chatbot for customer facing (CX) and employee facing (EX) products"}, {"ticker": "GDDY", "text": "Airo.AI is agentic product in beta for small businesses to build web apps, but still not being monetized"}, {"ticker": "GDDY", "text": "GoDaddy ANS: a DNS-like registry for AI agents specifically"}, {"ticker": "INTA", "text": "Intapp Assist: AI research capabilities to complement DealCloud product"}, {"ticker": "INTA", "text": "Anthropic plugin: related to contract review and NDA triage, not focus area for Intapp."}, {"ticker": "INTU", "text": "Not assuming AI agents will be monetized in their guidance, strategy is to drive more consumption of other services"}, {"ticker": "INTU", "text": "Using AI agents to augment middle market Quickbooks, in addition to human assistance service"}, {"ticker": "INTU", "text": "Thinks they can disrupt assisted tax category: opening in-person turbotax locations complemented with AI tools. Market is 7 times bigger than DIY category (HRB)"}], "latestSignals": [{"ticker": "AMPL", "quarter": "2025 Q4", "signal": "Green", "rationale": "Gross margin contraction and agentic offering not expected to drive pricing"}, {"ticker": "AVPT", "quarter": "2025 Q4", "signal": "Red", "rationale": "revenue drivers accelerating and operating margins expanding"}, {"ticker": "BILL", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "revenue drivers accelerating and operating margins expanding, but seeing gross margin contraction as pricing comes into focus"}, {"ticker": "CWAN", "quarter": "{{latest_calendar_period}}", "signal": "Missing", "rationale": ""}, {"ticker": "DOCU", "quarter": "2025 Q3", "signal": "Green", "rationale": "AI product still in beta, but topline already decelerating despite new product ramp"}, {"ticker": "FIVN", "quarter": "2025 Q4", "signal": "Green", "rationale": "revenue decelerating on live agents demand, AI is still small percentage of revenue"}, {"ticker": "FRSH", "quarter": "2025 Q4", "signal": "Green", "rationale": "revenue deceleration despite launch of agentic products"}, {"ticker": "GDDY", "quarter": "2025 Q4", "signal": "Green", "rationale": "bookings deceleration despite AI tools"}, {"ticker": "INTA", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "ARR accelerating, but Anthropic announcements in legal field suggest competition is coming"}, {"ticker": "INTU", "quarter": "2026 Q1", "signal": "Red", "rationale": "Evidence of AI tailwinds internally and service offering."}, {"ticker": "LAW", "quarter": "2025 Q4", "signal": "Green", "rationale": "fundamentals decelerating, and unable to separately monetize AI agent"}, {"ticker": "OTEX", "quarter": "2025 Q4", "signal": "Green", "rationale": "Decelerating growth trends, current approach to AI unclear"}, {"ticker": "PAY", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "Fundamentals are decelerating but unclear if there is an AI threat given they are much more of a payments company"}, {"ticker": "QLYS", "quarter": "2025 Q4", "signal": "Green", "rationale": "Fundamentals trending towards deceleration with AI competition in adjacent markets"}, {"ticker": "RPD", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamentals decelerating, implementation of AI into services delivery slow."}, {"ticker": "SPSC", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamentals decelerating on macro"}, {"ticker": "TENB", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamentals decelerating, AI not a tailwind but unclear if its an actual headwind yet."}, {"ticker": "TYL", "quarter": "2025 Q4", "signal": "Green", "rationale": "AI not moving the needle: growth continues to decelerate despite product launch and SaaS strength"}, {"ticker": "VRNS", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamentals worsening but partially due to non-SaaS transition, and unclear if AI threats emerge"}, {"ticker": "WIX", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "Recent quarter demonstrated revenue acceleration from new AI product uptake, but more than offset by margin dilution from inference costs."}, {"ticker": "WK", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "earnings decelerating but not yet seeing AI headwinds"}, {"ticker": "ZIP", "quarter": "2025 Q4", "signal": "Yellow", "rationale": "fundamental weakness primarily driven by job market, unclear extent that AI is a headwind"}]}};
+
+    const bucketTable = document.getElementById('bucket-table');
+    const tableHead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    ['Metric', ...payload.kpis.quarters].forEach(label => {
+      const th = document.createElement('th');
+      th.textContent = label;
+      headRow.appendChild(th);
+    });
+    tableHead.appendChild(headRow);
+    bucketTable.appendChild(tableHead);
+
+    const tableBody = document.createElement('tbody');
+    payload.kpis.bucketTable.forEach(row => {
+      const tr = document.createElement('tr');
+      const metric = document.createElement('td');
+      metric.className = 'metric-label';
+      metric.textContent = row.metric;
+      tr.appendChild(metric);
+      row.values.forEach((value, index) => {
+        const td = document.createElement('td');
+        const metricName = payload.kpis.bucketTable.find(item => item.metric === row.metric).metric;
+        if (metricName === 'Revenue YoY Growth') td.textContent = value === null ? 'na' : `${(value * 100).toFixed(1)}%`;
+        else if (metricName.includes('YoY')) td.textContent = value === null ? 'na' : `${value.toFixed(0)} bps`;
+        else td.textContent = value === null ? 'na' : `${value.toFixed(1)}%`;
+        tr.appendChild(td);
+      });
+      tableBody.appendChild(tr);
+    });
+    bucketTable.appendChild(tableBody);
+
+    const counts = payload.notes.currentSignalCounts;
+    const progressPill = document.getElementById('progress-pill');
+    progressPill.textContent = payload.notes.progressColor;
+    progressPill.classList.add(`progress-${payload.notes.progressColor}`);
+    document.getElementById('green-count').textContent = counts.Green || 0;
+    document.getElementById('yellow-count').textContent = counts.Yellow || 0;
+    document.getElementById('red-count').textContent = counts.Red || 0;
+
+    const thesisDetailsToggle = document.getElementById('thesis-details-toggle');
+    const thesisDetailsPanel = document.getElementById('thesis-details-panel');
+    thesisDetailsToggle.addEventListener('click', () => {
+      const isHidden = thesisDetailsPanel.hasAttribute('hidden');
+      if (isHidden) thesisDetailsPanel.removeAttribute('hidden');
+      else thesisDetailsPanel.setAttribute('hidden', '');
+      thesisDetailsToggle.setAttribute('aria-expanded', String(isHidden));
+      thesisDetailsToggle.textContent = isHidden ? 'Hide Thesis Details' : 'Thesis Details';
+    });
+
+    const breadthSnapshot = document.getElementById('breadth-snapshot');
+    [
+      `Revenue accel vs decel: ${payload.kpis.breadth.revenue.accelerating} / ${payload.kpis.breadth.revenue.decelerating}`,
+      `GM expand vs shrink: ${payload.kpis.breadth.grossMargin.expanding} / ${payload.kpis.breadth.grossMargin.contracting}`,
+      `OPM expand vs shrink: ${payload.kpis.breadth.operatingMargin.expanding} / ${payload.kpis.breadth.operatingMargin.contracting}`,
+    ].forEach(line => {
+      const item = document.createElement('div');
+      item.textContent = line;
+      breadthSnapshot.appendChild(item);
+    });
+
+    const interpretation = document.getElementById('interpretation');
+    const revMetric = payload.kpis.bucketTable.find(row => row.metric === 'Revenue YoY Growth');
+    const gmMetric = payload.kpis.bucketTable.find(row => row.metric === 'Gross Margin YoYΔ');
+    const opMetric = payload.kpis.bucketTable.find(row => row.metric === 'Operating Margin YoYΔ');
+    [
+      `Bucket revenue growth averages have moved from ${(revMetric.values[0] * 100).toFixed(1)}% to ${(revMetric.values[revMetric.values.length - 1] * 100).toFixed(1)}% across the displayed quarters.`,
+      `Gross margin pressure is ${(gmMetric.values[gmMetric.values.length - 1] || 0) < 0 ? 'net contracting' : 'still net expanding'} on a simple-average basis, but breadth matters more than the average alone.`,
+      `Operating margins remain the cleaner offset, with ${payload.kpis.breadth.operatingMargin.expanding} names expanding versus ${payload.kpis.breadth.operatingMargin.contracting} shrinking in the latest quarter.`,
+    ].forEach(line => {
+      const item = document.createElement('div');
+      item.textContent = line;
+      interpretation.appendChild(item);
+    });
+
+    const forecastSummary = document.getElementById('forecast-summary');
+    const estimateCoverage = payload.kpis.estimateCoverage || [];
+    if (estimateCoverage.length) {
+      const coverageLine = document.createElement('div');
+      coverageLine.textContent = `Forward revenue estimate coverage: ${estimateCoverage.map(item => `${item.quarter} (${item.count})`).join(' · ')}`;
+      forecastSummary.appendChild(coverageLine);
+    } else {
+      const emptyLine = document.createElement('div');
+      emptyLine.textContent = 'No forward revenue estimates detected in the KPI export.';
+      forecastSummary.appendChild(emptyLine);
+    }
+
+    const forecastScoreboard = document.getElementById('forecast-scoreboard');
+    (payload.kpis.forecastRows || []).forEach(row => {
+      const block = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = `${row.ticker} · Forward Revenue`;
+      const lines = document.createElement('div');
+      lines.className = 'member-lines';
+      [
+        ['Estimate Quarters', row.quarters.join(' → ')],
+        ['Revenue YoY', row.revenueYoy.join(' → ')],
+      ].forEach(([label, value]) => {
+        const line = document.createElement('div');
+        line.innerHTML = `<code>${label}</code> ${value}`;
+        lines.appendChild(line);
+      });
+      block.append(summary, lines);
+      forecastScoreboard.appendChild(block);
+    });
+
+    const distributions = payload.kpis.distribution;
+    const distributionBars = document.getElementById('distribution-bars');
+    const distributionSelect = document.getElementById('distribution-select');
+    document.getElementById('distribution-subhead').textContent = `Latest-quarter company distribution for the selected KPI lens (${payload.kpis.latestDistributionQuarter}).`;
+    function renderDistribution(metric) {
+      distributionBars.innerHTML = '';
+      if (metric === 'Thesis Progress') {
+        const groups = [
+          ['Green', 'green'],
+          ['Yellow', 'yellow'],
+          ['Red', 'red'],
+          ['Missing', 'missing'],
+        ];
+        const cards = document.createElement('div');
+        cards.className = 'signal-groups';
+        groups.forEach(([label, cls]) => {
+          const matches = (payload.notes.currentSignals || []).filter(item => item.signal === label);
+          if (!matches.length) return;
+          const group = document.createElement('div');
+          group.className = `signal-group ${cls}`;
+          const head = document.createElement('div');
+          head.className = 'signal-group-head';
+          head.innerHTML = `<span>${label}</span><span>${matches.length}</span>`;
+          const list = document.createElement('div');
+          list.className = 'signal-company-list';
+          matches.forEach(item => {
+            const pill = document.createElement('div');
+            pill.className = 'signal-company';
+            pill.innerHTML = `<strong>${item.ticker}</strong><small>${item.quarter}</small>`;
+            list.appendChild(pill);
+          });
+          group.append(head, list);
+          cards.appendChild(group);
+        });
+        distributionBars.appendChild(cards);
+        return;
+      }
+      const values = distributions[metric] || [];
+      if (!values.length) return;
+      const min = Math.min(...values.map(item => item.value), 0);
+      const max = Math.max(...values.map(item => item.value), 0);
+      const span = Math.max(max - min, 1);
+      const zeroPos = ((0 - min) / span) * 100;
+      values.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        const name = document.createElement('div');
+        name.textContent = item.ticker;
+        const track = document.createElement('div');
+        track.className = 'bar-track';
+        const zero = document.createElement('div');
+        zero.className = 'bar-zero';
+        zero.style.left = `${zeroPos}%`;
+        const fill = document.createElement('div');
+        fill.className = 'bar-fill';
+        if (item.value < 0) fill.classList.add('negative');
+        const valuePos = ((item.value - min) / span) * 100;
+        fill.style.left = `${Math.min(zeroPos, valuePos)}%`;
+        fill.style.width = `${Math.max(Math.abs(valuePos - zeroPos), 1.2)}%`;
+        track.append(zero, fill);
+        const value = document.createElement('div');
+        value.textContent = item.display;
+        row.append(name, track, value);
+        distributionBars.appendChild(row);
+      });
+    }
+    distributionSelect.addEventListener('change', event => renderDistribution(event.target.value));
+    renderDistribution(distributionSelect.value);
+
+    const signalTrend = document.getElementById('signal-trend');
+    payload.notes.trend.forEach(row => {
+      const total = Math.max(row.Green + row.Yellow + row.Red, 1);
+      const card = document.createElement('div');
+      card.className = 'signal-quarter';
+      const title = document.createElement('div');
+      title.innerHTML = `<strong>${row.quarter}</strong>`;
+      const stack = document.createElement('div');
+      stack.className = 'stack';
+      const col = document.createElement('div');
+      col.className = 'stack-col';
+      [['green', row.Green], ['yellow', row.Yellow], ['red', row.Red]].forEach(([cls, count]) => {
+        const seg = document.createElement('div');
+        seg.className = `seg ${cls}`;
+        seg.style.height = `${(count / total) * 100}%`;
+        seg.title = `${cls}: ${count}`;
+        col.appendChild(seg);
+      });
+      stack.appendChild(col);
+      const foot = document.createElement('div');
+      foot.className = 'signal-counts';
+      [['green', row.Green], ['yellow', row.Yellow], ['red', row.Red]].forEach(([cls, count]) => {
+        const chip = document.createElement('div');
+        chip.className = `signal-chip ${cls}`;
+        chip.innerHTML = `<span>${cls.toUpperCase()}</span><strong>${count}</strong>`;
+        foot.appendChild(chip);
+      });
+      card.append(title, stack, foot);
+      signalTrend.appendChild(card);
+    });
+
+    function renderBulletList(targetId, items) {
+      const target = document.getElementById(targetId);
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="ticker">${item.ticker}</span> ${item.text}`;
+        target.appendChild(li);
+      });
+    }
+    renderBulletList('confirming-list', payload.notes.confirming);
+    renderBulletList('disconfirming-list', payload.notes.disconfirming);
+    renderBulletList('thematic-list', payload.notes.thematic);
+
+    const memberScoreboard = document.getElementById('member-scoreboard');
+    payload.kpis.memberRows.forEach(row => {
+      const block = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = `${row.ticker} · LTM ${row.ltmRevenue}`;
+      const lines = document.createElement('div');
+      lines.className = 'member-lines';
+      [
+        ['Quarters', row.quarters.join(' → ')],
+        ['Rev YoY', row.revenueYoy.join(' → ')],
+        ['Rev YoYΔ', row.revenueYoyDelta.join(' → ')],
+        ['GM', row.grossMargin.join(' → ')],
+        ['GM YoYΔ', row.grossMarginYoyDelta.join(' → ')],
+        ['OPM', row.operatingMargin.join(' → ')],
+        ['OPM YoYΔ', row.operatingMarginYoyDelta.join(' → ')],
+      ].forEach(([label, value]) => {
+        const line = document.createElement('div');
+        line.innerHTML = `<code>${label}</code> ${value}`;
+        lines.appendChild(line);
+      });
+      block.append(summary, lines);
+      memberScoreboard.appendChild(block);
+    });
+  </script>
+</body>
+</html>
